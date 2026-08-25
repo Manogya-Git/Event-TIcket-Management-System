@@ -15,11 +15,11 @@ class Event(models.Model):
         ("COMPLETED", "Completed"),
     ]
         
-    title = models.CharField(max_length=30)
-    description = models.CharField()
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL,max_length=10,null=True, related_name='events')
-    organizer = models.CharField(max_length=20)
-    venue = models.CharField(max_length=10)
+    title = models.CharField(max_length=100)
+    description = models.TextField()
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL,null=True,blank=True, related_name='events')
+    organizer = models.CharField(max_length=100)
+    venue = models.CharField(max_length=100)
     start_date = models.DateField()
     end_date = models.DateField()
     image = models.ImageField(upload_to='uploads/events/',blank=True, null=True)
@@ -49,7 +49,9 @@ class Ticket(models.Model):
         ("VVIP", "VVIP"),
     ]
     event = models.ForeignKey(Event,on_delete=models.CASCADE)
-    ticket_type = models.CharField(choices=TICKET_CHOICES,default="regular")
+    ticket_type = models.CharField(choices=TICKET_CHOICES,default="REGULAR",max_length=10)
+    quantity = models.PositiveIntegerField(default=0)
+    sold_quantity = models.PositiveIntegerField(default=0)
     price = models.IntegerField()
 
     def __str__(self):
