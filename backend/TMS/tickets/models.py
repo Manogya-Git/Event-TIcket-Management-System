@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 # Create your models here.
 class Category(models.Model):
@@ -48,7 +49,7 @@ class Ticket(models.Model):
         ("VIP", "VIP"),
         ("VVIP", "VVIP"),
     ]
-    event = models.ForeignKey(Event,on_delete=models.CASCADE)
+    event = models.ForeignKey(Event,on_delete=models.CASCADE,related_name='tickets')
     ticket_type = models.CharField(choices=TICKET_CHOICES,default="REGULAR",max_length=10)
     quantity = models.PositiveIntegerField(default=0)
     sold_quantity = models.PositiveIntegerField(default=0)
@@ -56,3 +57,20 @@ class Ticket(models.Model):
 
     def __str__(self):
         return f"{self.event.title} - {self.ticket_type}"
+
+class Booking(models.Model):
+    STATUS_CHOICE = [
+        ("PENDING", "Pending"),
+        ("CONFIRMED", "Confirmed"),
+        ("CANCELLED", "Cancelled"),
+    ]
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name='bookings')
+    ticket = models.ForeignKey(Ticket,on_delete=models.CASCADE,related_name='bookings')
+    quantity = models.PositiveIntegerField(default=1)
+    status = models.CharField(max_length=20,choices=STATUS_CHOICE, default='PENDING')
+    created = models.DateTimeField(auto_now=True)
+
+    def total_price(self):
+        return self.ticket.price * self.quantity
+
+

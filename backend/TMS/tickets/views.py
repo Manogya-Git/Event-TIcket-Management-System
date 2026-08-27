@@ -2,8 +2,8 @@ from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework.response import Response
-from .models import Ticket, Event, Category
-from .serializer import TicketSerializer,EventSerializer,CategorySerializer
+from .models import Ticket, Event, Category,Booking
+from .serializer import TicketSerializer,EventSerializer,CategorySerializer, BookingSerializer
 
 
 
@@ -31,3 +31,14 @@ class CategoryListView(generics.ListCreateAPIView):
 class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+
+
+class BookingListCreateView(generics.ListCreateAPIView):
+    serializer_class = BookingSerializer
+
+    def get_queryset(self):
+        return Booking.objects.filter(user=self.request.user)
+
+    def perform_create(self,serializer):
+        serializer.save(user=self.request.user)
+
