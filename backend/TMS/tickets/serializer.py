@@ -12,7 +12,7 @@ class EventSerializer(serializers.ModelSerializer):
         model = Event
         fields = ['id', 'title', 'description', 'category', 'organizer',
                   'venue', 'start_date', 'end_date', 'image', 'status',
-                  'tickets', 'created_at', 'updated_at']
+                  'tickets', 'created_at', 'updated_at','slug']
 
     def validate(self,data):
         start = data.get("start_date",getattr(self.instance,"start_date",None))
