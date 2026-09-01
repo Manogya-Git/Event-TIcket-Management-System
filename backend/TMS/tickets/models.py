@@ -17,6 +17,7 @@ class Event(models.Model):
     ]
         
     title = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=150, unique=True,blank=True, null=True)
     description = models.TextField()
     category = models.ForeignKey(Category, on_delete=models.SET_NULL,null=True,blank=True, related_name='events')
     organizer = models.CharField(max_length=100)
@@ -72,5 +73,7 @@ class Booking(models.Model):
 
     def total_price(self):
         return self.ticket.price * self.quantity
+
+
 
 
