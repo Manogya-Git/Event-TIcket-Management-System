@@ -22,6 +22,7 @@ class EventCreateView(generics.ListCreateAPIView):
 class EventDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
+    lookup_field = 'slug'
 
 class CategoryListView(generics.ListCreateAPIView):
     queryset = Category.objects.all()
