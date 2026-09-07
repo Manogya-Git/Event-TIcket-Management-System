@@ -4,6 +4,7 @@ import { Calendar, MapPin, ArrowLeft } from "lucide-react";
 import { BASE_URL } from "../api";
 import { formatDate } from "../utils/dateUtils";
 import axios from "axios";
+import { CheckoutProvider } from "../context/CheckoutContext";
 
 const CheckoutLayout = () => {
   const { slug } = useParams();
@@ -105,8 +106,11 @@ const CheckoutLayout = () => {
             )}
           </div>
 
+          <CheckoutProvider>
+            <Outlet context={{ event }} />
+          </CheckoutProvider>
+
           {/* Right: swaps between TicketSelection / PersonalDetails / Payment */}
-          <Outlet context={{ event }} />
         </div>
       </main>
     </div>

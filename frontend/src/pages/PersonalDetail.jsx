@@ -1,16 +1,13 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useCheckout } from "../context/CheckoutContext";
 
 const PersonalDetails = () => {
-  const [formData, setFormData] = useState({
-    phone: "",
-    email: "",
-    fullName: "",
-    address: "",
-    acceptedTerms: false,
-  });
+  const { personalDetails, setPersonalDetails } = useCheckout();
+  const navigate = useNavigate();
 
   const handleChange = (field) => (e) => {
-    setFormData((prev) => ({ ...prev, [field]: e.target.value }));
+    setPersonalDetails((prev) => ({ ...prev, [field]: e.target.value }));
   };
 
   return (
@@ -32,7 +29,7 @@ const PersonalDetails = () => {
           <input
             type="tel"
             placeholder="Your Phone Number"
-            value={formData.phone}
+            value={personalDetails.phone}
             onChange={handleChange("phone")}
             className="mt-2 w-full rounded-xl border border-neutral-800 bg-neutral-950/80 px-4 py-3.5 text-sm text-white placeholder-neutral-600 shadow-inner shadow-black/20 transition duration-200 hover:border-neutral-700 focus:border-lime-400 focus:ring-4 focus:ring-lime-400/10"
           />
@@ -45,7 +42,7 @@ const PersonalDetails = () => {
           <input
             type="email"
             placeholder="Your Email Address"
-            value={formData.email}
+            value={personalDetails.email}
             onChange={handleChange("email")}
             className="mt-2 w-full rounded-xl border border-neutral-800 bg-neutral-950/80 px-4 py-3.5 text-sm text-white placeholder-neutral-600 shadow-inner shadow-black/20 transition duration-200 hover:border-neutral-700 focus:border-lime-400 focus:ring-4 focus:ring-lime-400/10"
           />
@@ -58,7 +55,7 @@ const PersonalDetails = () => {
           <input
             type="text"
             placeholder="Your Full Name"
-            value={formData.fullName}
+            value={personalDetails.fullName}
             onChange={handleChange("fullName")}
             className="mt-2 w-full rounded-xl border border-neutral-800 bg-neutral-950/80 px-4 py-3.5 text-sm text-white placeholder-neutral-600 shadow-inner shadow-black/20 transition duration-200 hover:border-neutral-700 focus:border-lime-400 focus:ring-4 focus:ring-lime-400/10"
           />
@@ -71,7 +68,7 @@ const PersonalDetails = () => {
           <input
             type="text"
             placeholder="Your Address"
-            value={formData.address}
+            value={personalDetails.address}
             onChange={handleChange("address")}
             className="mt-2 w-full rounded-xl border border-neutral-800 bg-neutral-950/80 px-4 py-3.5 text-sm text-white placeholder-neutral-600 shadow-inner shadow-black/20 transition duration-200 hover:border-neutral-700 focus:border-lime-400 focus:ring-4 focus:ring-lime-400/10"
           />
@@ -81,9 +78,9 @@ const PersonalDetails = () => {
         <input
           type="checkbox"
           id="acceptTerms"
-          checked={formData.acceptedTerms}
+          checked={personalDetails.acceptedTerms}
           onChange={(e) =>
-            setFormData((prev) => ({
+            setPersonalDetails((prev) => ({
               ...prev,
               acceptedTerms: e.target.checked,
             }))
@@ -101,8 +98,9 @@ const PersonalDetails = () => {
         </label>
       </div>
 
-      {formData.acceptedTerms && (
+      {personalDetails.acceptedTerms && (
         <button
+        onClick={() => navigate("../payment")}
           type="button"
           className="mt-5 w-full rounded-xl bg-lime-400 px-4 py-3.5 text-sm font-semibold text-neutral-950 transition hover:bg-lime-300 focus:outline-none focus:ring-4 focus:ring-lime-400/30"
         >

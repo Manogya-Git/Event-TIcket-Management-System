@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import TicketGrid from "../components/Buy Tickets/TicketGrid";
+import { useCheckout } from "../context/CheckoutContext";
 
 const BuyTickets = () => {
   const { event } = useOutletContext();
 
-  const [selectedTicketId, setSelectedTicketId] = useState(null);
-  const [quantity, setQuantity] = useState(1);
+  const { selectedTicketId, setSelectedTicketId, quantity, setQuantity } = useCheckout();
 
   useEffect(() => {
     setSelectedTicketId(event?.tickets?.[0]?.id ?? null);

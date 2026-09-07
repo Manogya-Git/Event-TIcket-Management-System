@@ -9,8 +9,7 @@ const EventGrid = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate()
-  
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
@@ -85,16 +84,20 @@ const EventGrid = () => {
               <div className="flex items-center gap-2 text-sm text-gray-600">
                 <Tag size={16} className="text-gray-500 shrink-0" />
                 <span>
-                  {Array.isArray(event.prices)
-                    ? event.prices.map((p) => `Rs. ${p}`).join(" ")
-                    : `Rs. ${event.price}`}
+                  {" "}
+                  {event.tickets && event.tickets.length > 0
+                    ? event.tickets.map((t) => `Rs. ${t.price}`).join(" ")
+                    : "Price unavailable"}
                 </span>
               </div>
             </div>
 
             {/* Buy tickets button */}
             <div className="px-5 pb-5">
-              <button onClick={()=> navigate(`/buy-tickets/${event.slug}`)} className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 rounded-lg text-base transition-colors duration-150">
+              <button
+                onClick={() => navigate(`/buy-tickets/${event.slug}`)}
+                className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 rounded-lg text-base transition-colors duration-150"
+              >
                 BUY TICKETS
               </button>
             </div>

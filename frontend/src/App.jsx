@@ -8,6 +8,7 @@ import BuyTickets from "./pages/BuyTickets";
 import CheckoutLayout from "./components/CheckoutLayout";
 import PersonalDetails from "./pages/PersonalDetail";
 import TermsAnd from "./pages/TermsAnd";
+import Payment from "./pages/Payment";
 
 const App = () => {
   return (
@@ -23,7 +24,7 @@ const App = () => {
           <Route path="/buy-tickets/:slug" element={<CheckoutLayout />}>
             <Route index element={<BuyTickets />} />
             <Route path="details" element={<PersonalDetails />} />
-
+            <Route path="payment" element={<Payment />} />
           </Route>
         </Route>
       </Routes>
