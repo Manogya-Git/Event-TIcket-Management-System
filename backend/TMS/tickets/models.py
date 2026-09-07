@@ -77,14 +77,21 @@ class Booking(models.Model):
         ("CONFIRMED", "Confirmed"),
         ("CANCELLED", "Cancelled"),
     ]
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name='bookings')
     ticket = models.ForeignKey(Ticket,on_delete=models.CASCADE,related_name='bookings')
     quantity = models.PositiveIntegerField(default=1)
     status = models.CharField(max_length=20,choices=STATUS_CHOICE, default='PENDING')
-    created = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
+    full_name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone_number = models.CharField(max_length=20)
+    address = models.CharField(max_length=255, blank=True)
+
 
     def total_price(self):
         return self.ticket.price * self.quantity
+
+    def __str__(self):
+        return f"- {self.ticket} - {self.quantity}"
 
 
 

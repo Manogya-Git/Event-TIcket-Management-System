@@ -1,3 +1,5 @@
+from django.db import transaction
+
 from rest_framework import serializers
 from .models import Ticket, Event, Category, Booking
 
@@ -29,24 +31,27 @@ class CategorySerializer(serializers.ModelSerializer):
 class BookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Booking
-        fields = ["id", "ticket", "quantity", "status", "created_at"]
+        fields = ["id", "ticket", "quantity", "status", "created",
+            "full_name", "email", "phone_number", "address",]
+        read_only_fields = ["status", "created"]
 
-    def validate(self,data):
-        ticket = data["ticket"]
-        quantity = data["quantity"]
-        remaining = ticket.quantity_available - ticket.quantity_sold
 
-        if quantity > remaining:
-            raise serializers.ValidationError("Not enough tickets available for this booking. ")
-        return data
+    def create(self, validated_data):
+        ticket_id = validated_data['ticket'].id
+        quantity = validated_data['quantity']
 
-    def create(self, validate_data):
-        ticket = validate_data['ticket']
-        quantity = validate_data['quantity']
+        with transaction.atomic():
+            ticket = Ticket.objects.select_for_update().get(pk=ticket_id)
+            remaining = ticket.quantity - ticket.sold_quantity
 
-        booking = Booking.objects.create(**validate_data)
+            if quantity > remaining:
+                raise serializers.ValidationError(
+                    "Not enough tickets available for this booking "
+                )
 
-        ticket.quantity_sold += quantity
-        ticket.save()
+            ticket.sold_quantity +=quantity
+            ticket.save()
+
+            booking = Booking.objects.create(**validated_data)
 
         return booking

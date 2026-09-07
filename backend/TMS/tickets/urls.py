@@ -1,12 +1,10 @@
-from django.urls import path
-from .views import TicketListCreateView,TicketDetailView, EventCreateView,EventDetailView,CategoryListView,CategoryDetailView
+from rest_framework.routers import DefaultRouter
+from .views import TicketViewSet, EventViewSet, CategoryViewSet, BookingViewSet
 
-urlpatterns = [
-path('tickets/',TicketListCreateView.as_view(), name='TicketList'),
-path('tickets/<int:pk>/',TicketDetailView.as_view(),name="TicketDetailView"),
-path('events/',EventCreateView.as_view(), name='EventList'),
-path('events/<slug:slug>/',EventDetailView.as_view(),name="EventDetailView"),
-path('category/',CategoryListView.as_view(), name='CategoryList'),
-path('category/<int:pk>/',CategoryDetailView.as_view(),name="CategoryDetailView"),
+router = DefaultRouter()
+router.register('tickets', TicketViewSet, basename='ticket')
+router.register('events', EventViewSet, basename='event')
+router.register('category', CategoryViewSet, basename='category')
+router.register('bookings', BookingViewSet, basename='booking')
 
-]
+urlpatterns = router.urls
