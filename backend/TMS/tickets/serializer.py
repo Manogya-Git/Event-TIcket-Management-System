@@ -55,3 +55,6 @@ class BookingSerializer(serializers.ModelSerializer):
             booking = Booking.objects.create(**validated_data)
 
         return booking
+
+class EsewaPaymentInitSerializer(serializers.Serializer):
+    booking_id = serializers.IntegerField()

@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -136,3 +139,9 @@ CORS_ALLOWED_ORIGINS = [
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+ESEWA_PRODUCT_CODE = os.environ.get("ESEWA_PRODUCT_CODE")
+ESEWA_SECRET_KEY = os.environ.get("ESEWA_SECRET_KEY")
+ESEWA_FORM_URL = os.environ.get("ESEWA_FORM_URL")
+ESEWA_SUCCESS_URL = os.environ.get("ESEWA_SUCCESS_URL")
+ESEWA_FAILURE_URL = os.environ.get("ESEWA_FAILURE_URL")
