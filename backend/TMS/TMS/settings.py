@@ -13,10 +13,11 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
-load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env")
+load_dotenv(BASE_DIR.parent / ".env")
 
 
 # Quick-start development settings - unsuitable for production
@@ -140,8 +141,18 @@ CORS_ALLOWED_ORIGINS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-ESEWA_PRODUCT_CODE = os.environ.get("ESEWA_PRODUCT_CODE")
-ESEWA_SECRET_KEY = os.environ.get("ESEWA_SECRET_KEY")
-ESEWA_FORM_URL = os.environ.get("ESEWA_FORM_URL")
-ESEWA_SUCCESS_URL = os.environ.get("ESEWA_SUCCESS_URL")
-ESEWA_FAILURE_URL = os.environ.get("ESEWA_FAILURE_URL")
+# Sandbox defaults are eSewa's public test merchant credentials.
+ESEWA_PRODUCT_CODE = os.environ.get("ESEWA_PRODUCT_CODE", "EPAYTEST")
+ESEWA_SECRET_KEY = os.environ.get("ESEWA_SECRET_KEY", "8gBm/:&EnhH.1/q")
+ESEWA_FORM_URL = os.environ.get(
+    "ESEWA_FORM_URL",
+    "https://rc-epay.esewa.com.np/api/epay/main/v2/form",
+)
+ESEWA_SUCCESS_URL = os.environ.get(
+    "ESEWA_SUCCESS_URL",
+    "http://localhost:5173/payment/success",
+)
+ESEWA_FAILURE_URL = os.environ.get(
+    "ESEWA_FAILURE_URL",
+    "http://localhost:5173/payment/failure",
+)

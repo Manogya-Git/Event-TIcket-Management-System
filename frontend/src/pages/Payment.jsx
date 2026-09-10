@@ -4,6 +4,8 @@ import esewaLogo from "../assets/esewa.png";
 import khaltiLogo from "../assets/khalti-logo-png_seeklogo-337962.png";
 import { useCheckout } from "../context/CheckoutContext";
 import axios from "axios";
+import { redirectToEsewa } from "../utils/esewaRedirect";
+import { BASE_URL } from "../api";
 
 const PAYMENT_METHODS = [
   { id: "esewa", label: "eSewa", logo: esewaLogo },
@@ -34,9 +36,21 @@ const Payment = () => {
       });
 
       const booking = response.data;
-      console.log("Booking created:", booking);
 
-      
+      if (selectedMethod !== "esewa") {
+        setError("Khalti is not connected yet. Please pay with eSewa.");
+        return;
+      }
+
+      const initiateResponse = await axios.post(
+        `${BASE_URL}/payments/esewa/initiate/`,
+        {
+          booking_id: booking.id,
+        },
+      );
+
+      const { payload, form_url } = initiateResponse.data;
+      redirectToEsewa(payload, form_url);
     } catch (err) {
       if (err.response?.status === 400) {
         setError(

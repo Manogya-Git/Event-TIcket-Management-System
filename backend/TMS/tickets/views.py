@@ -1,15 +1,23 @@
-from django.shortcuts import render
+import base64
+import json
+
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from .models import Ticket, Event, Category,Booking
-from .serializer import TicketSerializer,EventSerializer,CategorySerializer, BookingSerializer,EsewaPaymentInitSerializer
-
-from .utils import generate_esewa_signature
+from rest_framework.views import APIView
+from .models import Ticket, Event, Category, Booking
+from .serializer import (
+    TicketSerializer,
+    EventSerializer,
+    CategorySerializer,
+    BookingSerializer,
+    EsewaPaymentInitSerializer,
+)
+from .utils import generate_esewa_signature, verify_esewa_signature
 import uuid
 from django.conf import settings
-from django.shortcuts import get_object_or_404
-from rest_framework.views import APIView
+
 
 
 
@@ -31,38 +39,85 @@ class BookingViewSet(viewsets.ModelViewSet):
     serializer_class = BookingSerializer
 
 class InitiatEsewaPaymentView(APIView):
-    def post(self,request):
+    authentication_classes = []
+    permission_classes = [AllowAny]
+
+    def post(self, request):
         serializer = EsewaPaymentInitSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        booking = get_object_or_404(Booking,pk=serializer.validated_data["booking_id"])
+        booking = get_object_or_404(
+            Booking, pk=serializer.validated_data["booking_id"]
+        )
 
-        if booking.status !="PENDING":
-            return Response({"detail":"this booking is not eligible for payment"},status=400)
-        total_amount = booking.total_price()
-        transaction_uuid = str(uuid.uuid4())
+        if booking.status != "PENDING":
+            return Response(
+                {"detail": "this booking is not eligible for payment"},
+                status=400,
+            )
+
+        amount = f"{booking.total_price():.2f}"
+        tax_amount = "0.00"
+        service_charge = "0.00"
+        delivery_charge = "0.00"
+        total_amount = f"{float(amount) + float(tax_amount) + float(service_charge) + float(delivery_charge):.2f}"
+        transaction_uuid = f"{booking.id}-{uuid.uuid4().hex}"
         booking.transaction_uuid = transaction_uuid
-        booking.save()
+        booking.save(update_fields=["transaction_uuid"])
 
-        signature = generate_esewa_signature(total_amount=total_amount,transaction_uuid=transaction_uuid,product_code=settings.ESEWA_PRODUCT_CODE)
+        signature = generate_esewa_signature(
+            total_amount=total_amount,
+            transaction_uuid=transaction_uuid,
+            product_code=settings.ESEWA_PRODUCT_CODE,
+        )
 
         payload = {
-            "amount": total_amount,
-            "tax_amount": 0,
+            "amount": amount,
+            "tax_amount": tax_amount,
             "total_amount": total_amount,
             "transaction_uuid": transaction_uuid,
             "product_code": settings.ESEWA_PRODUCT_CODE,
-            "product_service_charge": 0,
-            "product_delivery_charge": 0,
+            "product_service_charge": service_charge,
+            "product_delivery_charge": delivery_charge,
             "success_url": settings.ESEWA_SUCCESS_URL,
             "failure_url": settings.ESEWA_FAILURE_URL,
             "signed_field_names": "total_amount,transaction_uuid,product_code",
             "signature": signature,
-
         }
-        return Response(payload)
+        return Response(
+            {
+                "form_url": settings.ESEWA_FORM_URL,
+                "payload": payload,
+            }
+        )
         
 
+class VerifyEsewaPaymentView(APIView):
+    def post(self,request):
+        encoded_data = request.data.get("data")
+        if not encoded_data:
+            return Response({"error":"Missing data"},status=400)
+
+        decoded_bytes = base64.b64decode(encoded_data)
+        decoded_json = json.loads(decoded_bytes)
+        is_valid = verify_esewa_signature(decoded_json)
+        if not is_valid:
+            return Response({"error":"Invalid Signature"},status = 400)
+        transaction_uuid = decoded_json["transaction_uuid"]
+        booking = get_object_or_404(
+            Booking,
+            transaction_uuid=transaction_uuid
+        )
+
+        # 7. Mark booking as PAID
+        booking.status = "PAID"
+        booking.save(update_fields=["status"])
+
+        return Response({
+            "message": "Payment verified successfully",
+            "booking_id": booking.id,
+            "status": booking.status,
+        })
 
 
 
