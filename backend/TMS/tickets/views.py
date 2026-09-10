@@ -1,6 +1,7 @@
 import base64
 import json
 
+from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
@@ -37,6 +38,24 @@ class CategoryViewSet(viewsets.ModelViewSet):
 class BookingViewSet(viewsets.ModelViewSet):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
+
+    @action(detail=False,methods=['get']) 
+    def retrieve_by_transaction(self,request):
+        transaction_uuid = request.query_params.get("transaction_uuid")
+        if not transaction_uuid:
+            return Response(
+                            {"detail": "this uuid is not available "},
+                            status=400,
+                        )
+        booking = get_object_or_404(
+                    Booking,
+                    transaction_uuid=transaction_uuid
+                )
+        serializer = self.serializer_class(booking)
+        return Response(serializer.data)
+        
+
+
 
 class InitiatEsewaPaymentView(APIView):
     authentication_classes = []

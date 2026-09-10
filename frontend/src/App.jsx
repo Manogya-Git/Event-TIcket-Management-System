@@ -26,8 +26,8 @@ const App = () => {
             <Route index element={<BuyTickets />} />
             <Route path="details" element={<PersonalDetails />} />
             <Route path="payment" element={<Payment />} />
-            <Route path="payment/success" element={<PaymentSuccessful />} />
           </Route>
+          <Route path="payment/success/" element={<PaymentSuccessful />} />
         </Route>
       </Routes>
     </BrowserRouter>
