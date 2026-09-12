@@ -77,6 +77,10 @@ class Booking(models.Model):
         ("CONFIRMED", "Confirmed"),
         ("CANCELLED", "Cancelled"),
     ]
+    PAYMENT_CHOICE = [
+        ("ESEWA","Esewa"),
+         ("KHALTI","Khalti"),
+    ]
     ticket = models.ForeignKey(Ticket,on_delete=models.CASCADE,related_name='bookings')
     quantity = models.PositiveIntegerField(default=1)
     status = models.CharField(max_length=20,choices=STATUS_CHOICE, default='PENDING')
@@ -86,6 +90,8 @@ class Booking(models.Model):
     phone_number = models.CharField(max_length=20)
     address = models.CharField(max_length=255, blank=True)
     transaction_uuid = models.CharField(max_length=100,blank=True,null=True)
+    payment_method = models.CharField(max_length=20,choices=PAYMENT_CHOICE)
+    khalti_pidx = models.CharField(max_length = 100,blank=True,null=True)
 
 
     def total_price(self):

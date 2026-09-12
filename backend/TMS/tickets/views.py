@@ -21,7 +21,6 @@ from django.conf import settings
 
 
 
-
 class TicketViewSet(viewsets.ModelViewSet):
     queryset = Ticket.objects.all()
     serializer_class = TicketSerializer

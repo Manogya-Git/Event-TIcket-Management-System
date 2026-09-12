@@ -25,8 +25,10 @@ const PaymentSuccessful = () => {
             data,
           },
         );
+        const paymentStatus = response.data.status;
+
         setBooking(response.data.booking || response.data);
-        setStatus(response.data.status || "failed");
+        setStatus(paymentStatus === "PAID" ? "PAID" : "failed");
       } catch (error) {
         console.error(error);
         setStatus("failed");

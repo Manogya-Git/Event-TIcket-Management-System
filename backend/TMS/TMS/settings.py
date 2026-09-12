@@ -141,18 +141,14 @@ CORS_ALLOWED_ORIGINS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Sandbox defaults are eSewa's public test merchant credentials.
-ESEWA_PRODUCT_CODE = os.environ.get("ESEWA_PRODUCT_CODE", "EPAYTEST")
-ESEWA_SECRET_KEY = os.environ.get("ESEWA_SECRET_KEY", "8gBm/:&EnhH.1/q")
-ESEWA_FORM_URL = os.environ.get(
-    "ESEWA_FORM_URL",
-    "https://rc-epay.esewa.com.np/api/epay/main/v2/form",
-)
-ESEWA_SUCCESS_URL = os.environ.get(
-    "ESEWA_SUCCESS_URL",
-    "http://localhost:5173/payment/success",
-)
-ESEWA_FAILURE_URL = os.environ.get(
-    "ESEWA_FAILURE_URL",
-    "http://localhost:5173/payment/failure",
-)
+ESEWA_PRODUCT_CODE = os.environ.get("ESEWA_PRODUCT_CODE")
+ESEWA_SECRET_KEY = os.environ.get("ESEWA_SECRET_KEY")
+ESEWA_FORM_URL = os.environ.get("ESEWA_FORM_URL")
+ESEWA_SUCCESS_URL = os.environ.get("ESEWA_SUCCESS_URL")
+ESEWA_FAILURE_URL = os.environ.get("ESEWA_FAILURE_URL")
+
+KHALTI_SECRET_KEY = os.environ.get("KHALTI_SECRET_KEY")
+KHALTI_INITIATE_URL = os.environ.get("KHALTI_INITIATE_URL")
+KHALTI_LOOKUP_URL = os.environ.get("KHALTI_LOOKUP_URL")
+KHALTI_SUCCESS_URL = os.environ.get("KHALTI_SUCCESS_URL")
+
