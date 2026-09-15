@@ -1,6 +1,8 @@
 import base64
 import json
 
+import requests
+
 from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
@@ -14,6 +16,8 @@ from .serializer import (
     CategorySerializer,
     BookingSerializer,
     EsewaPaymentInitSerializer,
+    KhaltiPaymentInitSerializer,
+    VerifyKhaltiPaymentSerializer
 )
 from .utils import generate_esewa_signature, verify_esewa_signature
 import uuid
@@ -136,6 +140,98 @@ class VerifyEsewaPaymentView(APIView):
             "booking_id": booking.id,
             "status": booking.status,
         })
+
+class InitiateKhaltiPaymentView(APIView):
+    def post(self,request):
+        serializer = KhaltiPaymentInitSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        booking = get_object_or_404(Booking,pk=serializer.validated_data["booking_id"])
+
+        if booking.status != "PENDING":
+            return Response({"error":"this booking id is not available"},status=400)
+
+        purchase_order_id = f"{booking.id}-{uuid.uuid4().hex}"
+        amount = booking.total_price() * 100
+        purchase_order_name = f"{booking.ticket.event.title} -{booking.ticket.ticket_type} "
+        customer_info = {
+            "name":booking.full_name,
+            "email":booking.email,
+            "phone":booking.phone_number
+
+        }
+        payload_dict ={
+            "return_url":settings.KHALTI_SUCCESS_URL,
+            "website_url": settings.FRONTEND_URL,
+            "amount":amount,
+            "purchase_order_id":purchase_order_id,
+            "purchase_order_name":purchase_order_name,
+            "customer_info": customer_info
+
+        }
+
+        response = requests.post(
+            settings.KHALTI_INITIATE_URL,
+            json=payload_dict,
+            headers={
+                "Authorization": f"Key {settings.KHALTI_SECRET_KEY}",
+                "Content-Type": "application/json",
+
+            },
+        )
+        if response.status_code != 200:
+            return Response({
+                "error":"Failed to initiate Khalti payment"
+            },status=400)
+
+        khalti_data = response.json()
+
+        pidx = khalti_data["pidx"]
+        payment_url = khalti_data["payment_url"]
+        booking.payment_method = "KHALTI"
+        booking.khalti_pidx = pidx
+        booking.save(update_fields=["khalti_pidx","payment_method"])
+        return Response({
+            "payment_url":payment_url
+        })
+        
+class VerifyKhaltiPaymentView(APIView):
+    def post(self, request):
+        serializer = VerifyKhaltiPaymentSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        pidx = serializer.validated_data["pidx"]
+
+        response = requests.post(
+            settings.KHALTI_LOOKUP_URL,
+            json={"pidx": pidx},
+            headers={
+                "Authorization": f"Key {settings.KHALTI_SECRET_KEY}",
+                "Content-Type": "application/json",
+            },
+        )
+        if response.status_code != 200:
+            return Response({
+                "error":"ailed to verify Khalti payment"
+            },status =400)
+        lookup_data = response.json()
+        if lookup_data["status"] != "Completed":
+            return Response({
+                "error":"Payment not completed "
+            },status=400)
+
+        booking = get_object_or_404(Booking,khalti_pidx=pidx)
+        booking.status = "CONFIRMED"
+        booking.save(update_fields=["status"])
+        return Response({
+               "message": "Payment verified successfully",
+                        "booking_id": booking.id,
+                        "status": booking.status,
+        })
+
+
+        
+
+
 
 
 

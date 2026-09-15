@@ -58,3 +58,12 @@ class BookingSerializer(serializers.ModelSerializer):
 
 class EsewaPaymentInitSerializer(serializers.Serializer):
     booking_id = serializers.IntegerField()
+
+class KhaltiPaymentInitSerializer(serializers.Serializer):
+    booking_id = serializers.IntegerField()
+
+class VerifyKhaltiPaymentSerializer(serializers.Serializer):
+    pidx = serializers.CharField()
+
+
+
