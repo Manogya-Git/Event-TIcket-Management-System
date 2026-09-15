@@ -101,5 +101,72 @@ class Booking(models.Model):
         return f"- {self.ticket} - {self.quantity}"
 
 
+class Venue(models.Model):
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=150, unique=True,blank=True, null=True)
+    address = models.CharField(max_length=255, blank=True)
+    image = models.ImageField(upload_to='uploads/venue/',blank=True, null=True)
+    capacity = models.PositiveIntegerField(default=0)
+
+    def save(self,*args,**kwargs):
+        if not self.slug:
+            base_slug = slugify(self.name)
+            slug = base_slug
+            counter = 1
+            while Venue.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{counter}"
+                counter +=1
+            self.slug = slug
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"- {self.name} "
+
+class Artist(models.Model):
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=150, unique=True,blank=True, null=True)
+    image = models.ImageField(upload_to='uploads/artist/',blank=True, null=True)
+    
+    def save(self,*args,**kwargs):
+        if not self.slug:
+            base_slug = slugify(self.name)
+            slug = base_slug
+            counter = 1
+            while Artist.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{counter}"
+                counter +=1
+            self.slug = slug
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"- {self.name} "
+
+class BookingInquiry(models.Model):
+    full_name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone_number = models.CharField(max_length=20)
+    address = models.CharField(max_length=255,blank=True)
+    event_name = models.CharField(max_length=100)
+    event_category = models.ForeignKey(Category, on_delete=models.SET_NULL,null=True,blank=True)
+    company_name = models.CharField(max_length=100,blank=True)
+    company_address = models.CharField(max_length=255,blank=True)
+    event_date = models.DateField()
+    message = models.TextField(blank=True)
+    class Meta:
+        abstract = True
+
+
+class VenueBookingInquiry(BookingInquiry):
+    venue = models.ForeignKey(Venue, on_delete=models.SET_NULL, null=True)
+
+class ArtistBookingInquiry(BookingInquiry):
+    artist = models.ForeignKey(Artist, on_delete=models.CASCADE)
+
+
+
+
+    
+
+
 
 
