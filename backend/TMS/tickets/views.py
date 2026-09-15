@@ -220,7 +220,7 @@ class VerifyKhaltiPaymentView(APIView):
             },status=400)
 
         booking = get_object_or_404(Booking,khalti_pidx=pidx)
-        booking.status = "CONFIRMED"
+        booking.status = "PAID"
         booking.save(update_fields=["status"])
         return Response({
                "message": "Payment verified successfully",

@@ -12,19 +12,22 @@ const PaymentSuccessful = () => {
   useEffect(() => {
     const verifyPayment = async () => {
       const data = searchParams.get("data");
+      const pidx = searchParams.get("pidx");
 
-      if (!data) {
+      if (!data && !pidx) {
         setStatus("failed");
         return;
       }
 
       try {
-        const response = await axios.post(
-          `${BASE_URL}/payments/esewa/verify/`,
-          {
-            data,
-          },
-        );
+        const response = pidx
+          ? await axios.post(`${BASE_URL}/payments/khalti/verify/`, {
+              pidx,
+            })
+          : await axios.post(`${BASE_URL}/payments/esewa/verify/`, {
+              data,
+            });
+
         const paymentStatus = response.data.status;
 
         setBooking(response.data.booking || response.data);
@@ -78,7 +81,7 @@ const PaymentSuccessful = () => {
 
             <p className="mt-3 text-[15px] text-white/60 leading-relaxed max-w-[26ch] mx-auto">
               {status === "verifying" &&
-                "Checking your eSewa payment. This usually takes a few seconds."}
+                "Checking your payment. This usually takes a few seconds."}
               {status === "failed" &&
                 "We couldn't confirm this transaction. No amount was charged if the payment was cancelled."}
               {status === "PAID" &&

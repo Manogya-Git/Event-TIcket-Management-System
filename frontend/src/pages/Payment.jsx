@@ -37,20 +37,41 @@ const Payment = () => {
 
       const booking = response.data;
 
-      if (selectedMethod !== "esewa") {
-        setError("Khalti is not connected yet. Please pay with eSewa.");
-        return;
+      if (selectedMethod === "khalti") {
+        const initiateResponse = await axios.post(
+          `${BASE_URL}/payments/khalti/initiate/`,
+          { booking_id: booking.id },
+        );
+
+        const { payment_url } = initiateResponse.data;
+
+        if (!payment_url) {
+          setError("Couldn't start the Khalti payment. Please try again.");
+          setLoading(false);
+          return;
+        }
+
+        window.location.href = payment_url;
+        return; // stop here — page is navigating away
       }
 
-      const initiateResponse = await axios.post(
-        `${BASE_URL}/payments/esewa/initiate/`,
-        {
-          booking_id: booking.id,
-        },
-      );
+      if (selectedMethod === "esewa") {
+        const initiateResponse = await axios.post(
+          `${BASE_URL}/payments/esewa/initiate/`,
+          { booking_id: booking.id },
+        );
 
-      const { payload, form_url } = initiateResponse.data;
-      redirectToEsewa(payload, form_url);
+        const { payload, form_url } = initiateResponse.data;
+
+        if (!payload || !form_url) {
+          setError("Couldn't start the eSewa payment. Please try again.");
+          setLoading(false);
+          return;
+        }
+
+        redirectToEsewa(payload, form_url);
+        return;
+      }
     } catch (err) {
       if (err.response?.status === 400) {
         setError(
@@ -60,7 +81,6 @@ const Payment = () => {
       } else {
         setError("Something went wrong. Please try again.");
       }
-    } finally {
       setLoading(false);
     }
   };
