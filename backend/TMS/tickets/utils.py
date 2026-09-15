@@ -2,6 +2,8 @@ import hmac
 import hashlib
 import base64
 from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 
 def generate_esewa_signature(total_amount, transaction_uuid, product_code):
     secret_key = settings.ESEWA_SECRET_KEY
@@ -29,3 +31,17 @@ def verify_esewa_signature(decoded_json):
     computed_signature = base64.b64encode(hashed.digest()).decode("utf-8")
 
     return computed_signature == decoded_json["signature"]
+
+
+def send_booking_confirmation_email(booking):
+    html_content = render_to_string("booking_confirmation.html", {"booking": booking})
+    text_content = f"Your ticket for {booking.ticket.event.title} is confirmed"
+    subject =  f"Your ticket for {booking.ticket.event.title} is confirmed"
+    email = EmailMultiAlternatives(
+        subject=subject,
+        body=text_content,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=[booking.email],
+    )
+    email.attach_alternative(html_content, "text/html")
+    email.send()

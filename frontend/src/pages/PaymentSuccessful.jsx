@@ -31,7 +31,7 @@ const PaymentSuccessful = () => {
         const paymentStatus = response.data.status;
 
         setBooking(response.data.booking || response.data);
-        setStatus(paymentStatus === "PAID" ? "PAID" : "failed");
+        setStatus(paymentStatus === "CONFIRMED" ? "CONFIRMED" : "failed");
       } catch (error) {
         console.error(error);
         setStatus("failed");
@@ -51,7 +51,7 @@ const PaymentSuccessful = () => {
           {/* Top: status band */}
           <div
             className={`px-8 pt-10 pb-8 text-center transition-colors duration-500 ${
-              status === "PAID"
+              status === "CONFIRMED"
                 ? "bg-linear-to-b from-[#22C55E]/20 to-transparent"
                 : status === "failed"
                   ? "bg-linear-to-b from-[#166534]/25 to-transparent"
@@ -76,7 +76,7 @@ const PaymentSuccessful = () => {
             >
               {status === "verifying" && "Confirming your seat"}
               {status === "failed" && "Payment didn't go through"}
-              {status === "PAID" && "You're going"}
+              {status === "CONFIRMED" && "You're going"}
             </h1>
 
             <p className="mt-3 text-[15px] text-white/60 leading-relaxed max-w-[26ch] mx-auto">
@@ -84,7 +84,7 @@ const PaymentSuccessful = () => {
                 "Checking your payment. This usually takes a few seconds."}
               {status === "failed" &&
                 "We couldn't confirm this transaction. No amount was charged if the payment was cancelled."}
-              {status === "PAID" &&
+              {status === "CONFIRMED" &&
                 "Your ticket confirmation is on its way to your email."}
             </p>
           </div>
@@ -96,7 +96,7 @@ const PaymentSuccessful = () => {
 
           {/* Bottom: details / actions */}
           <div className="px-8 py-7">
-            {status === "PAID" && booking && (
+            {status === "CONFIRMED" && booking && (
               <div className="mb-6 space-y-2.5">
                 {booking.eventName && (
                   <Row label="Event" value={booking.eventName} />
@@ -117,12 +117,12 @@ const PaymentSuccessful = () => {
             <button
               onClick={() => navigate("/")}
               className={`w-full py-3 rounded-lg text-[15px] font-medium transition-colors ${
-                status === "PAID"
+                status === "CONFIRMED"
                   ? "bg-[#22C55E] text-black hover:bg-[#4ADE80]"
                   : "bg-white/10 text-white hover:bg-white/15"
               }`}
             >
-              {status === "PAID" ? "Back to events" : "Return home"}
+              {status === "CONFIRMED" ? "Back to events" : "Return home"}
             </button>
           </div>
         </div>

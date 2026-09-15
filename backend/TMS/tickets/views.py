@@ -19,7 +19,7 @@ from .serializer import (
     KhaltiPaymentInitSerializer,
     VerifyKhaltiPaymentSerializer
 )
-from .utils import generate_esewa_signature, verify_esewa_signature
+from .utils import generate_esewa_signature, verify_esewa_signature, send_booking_confirmation_email
 import uuid
 from django.conf import settings
 
@@ -131,9 +131,13 @@ class VerifyEsewaPaymentView(APIView):
             transaction_uuid=transaction_uuid
         )
 
-        # 7. Mark booking as PAID
-        booking.status = "PAID"
-        booking.save(update_fields=["status"])
+        confirmed = Booking.objects.filter(
+            pk=booking.pk,
+            status="PENDING",
+        ).update(status="CONFIRMED")
+        if confirmed:
+            send_booking_confirmation_email(booking)
+        booking.status = "CONFIRMED"
 
         return Response({
             "message": "Payment verified successfully",
@@ -220,8 +224,13 @@ class VerifyKhaltiPaymentView(APIView):
             },status=400)
 
         booking = get_object_or_404(Booking,khalti_pidx=pidx)
-        booking.status = "PAID"
-        booking.save(update_fields=["status"])
+        confirmed = Booking.objects.filter(
+            pk=booking.pk,
+            status="PENDING",
+        ).update(status="CONFIRMED")
+        if confirmed:
+            send_booking_confirmation_email(booking)
+        booking.status = "CONFIRMED"
         return Response({
                "message": "Payment verified successfully",
                         "booking_id": booking.id,
