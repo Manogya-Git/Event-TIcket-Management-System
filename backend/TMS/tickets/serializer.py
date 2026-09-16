@@ -1,7 +1,7 @@
 from django.db import transaction
 
 from rest_framework import serializers
-from .models import Ticket, Event, Category, Booking
+from .models import Artist, Ticket, Event, Category, Booking, Venue ,VenueBookingInquiry,ArtistBookingInquiry
 
 class TicketSerializer(serializers.ModelSerializer):
     class Meta:
@@ -65,5 +65,25 @@ class KhaltiPaymentInitSerializer(serializers.Serializer):
 class VerifyKhaltiPaymentSerializer(serializers.Serializer):
     pidx = serializers.CharField()
 
+class VenueBookingInquirySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = VenueBookingInquiry
+        fields = "__all__"
+
+class ArtistBookingInquirySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArtistBookingInquiry
+        fields = "__all__"
+
+class VenueSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Venue
+        fields = "__all__"
+
+
+class ArtistSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Artist
+        fields = "__all__"
 
 

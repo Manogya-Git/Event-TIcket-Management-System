@@ -155,6 +155,9 @@ class BookingInquiry(models.Model):
     class Meta:
         abstract = True
 
+    def __str__(self):
+        return f"- {self.full_name} {self.event_name} "
+
 
 class VenueBookingInquiry(BookingInquiry):
     venue = models.ForeignKey(Venue, on_delete=models.SET_NULL, null=True)

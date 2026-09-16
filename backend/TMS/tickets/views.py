@@ -5,23 +5,29 @@ import requests
 
 from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets
+from rest_framework import generics, viewsets
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import Ticket, Event, Category, Booking
+from .models import Artist, Ticket, Event, Category, Booking, Venue,   VenueBookingInquiry,ArtistBookingInquiry
 from .serializer import (
+    ArtistSerializer,
     TicketSerializer,
     EventSerializer,
     CategorySerializer,
     BookingSerializer,
     EsewaPaymentInitSerializer,
     KhaltiPaymentInitSerializer,
-    VerifyKhaltiPaymentSerializer
+    VenueSerializer,
+    VerifyKhaltiPaymentSerializer,
+    VenueBookingInquirySerializer,
+    ArtistBookingInquirySerializer
+ 
 )
 from .utils import generate_esewa_signature, verify_esewa_signature, send_booking_confirmation_email
 import uuid
 from django.conf import settings
+from rest_framework.viewsets import ReadOnlyModelViewSet
 
 
 
@@ -237,7 +243,22 @@ class VerifyKhaltiPaymentView(APIView):
                         "status": booking.status,
         })
 
+class VenueBookingInquiryCreateView(generics.CreateAPIView):
+    queryset = VenueBookingInquiry.objects.all()
+    serializer_class = VenueBookingInquirySerializer
 
+class ArtistBookingInquiryCreateView(generics.CreateAPIView):
+    queryset = ArtistBookingInquiry.objects.all()
+    serializer_class = ArtistBookingInquirySerializer
+
+
+class VenueViewSet(ReadOnlyModelViewSet):
+    queryset = Venue.objects.all()
+    serializer_class =  VenueSerializer
+
+class ArtistViewSet(ReadOnlyModelViewSet):
+    queryset = Artist.objects.all()
+    serializer_class =  ArtistSerializer
         
 
 
