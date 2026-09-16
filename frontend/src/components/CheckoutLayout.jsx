@@ -65,9 +65,11 @@ const CheckoutLayout = () => {
       <main className="mx-auto max-w-6xl px-6 py-10 md:px-10">
         <button
           onClick={() => navigate(-1)}
-          className="mb-8 inline-flex items-center gap-2 text-sm text-neutral-400 hover:text-white transition-colors"
+          className="group mb-8 inline-flex items-center gap-2 rounded-full border border-neutral-700 bg-neutral-900/80 px-3.5 py-2 text-sm font-medium text-neutral-200 backdrop-blur-sm transition-all duration-200 hover:-translate-x-0.5 hover:border-lime-400 hover:bg-neutral-900 hover:text-lime-300"
         >
-          <ArrowLeft className="h-4 w-4" />
+          <span className="flex h-6 w-6 items-center justify-center rounded-full border border-neutral-700 text-xs transition-colors group-hover:border-lime-400 group-hover:text-lime-300">
+            <ArrowLeft className="h-3.5 w-3.5" />
+          </span>
           Back
         </button>
 

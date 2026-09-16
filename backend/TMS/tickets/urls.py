@@ -3,6 +3,7 @@ from django.urls import path
 
 from .views import (
     ArtistBookingInquiryCreateView,
+    ArtistViewSet,
     BookingViewSet,
     CategoryViewSet,
     EventViewSet,
@@ -10,6 +11,7 @@ from .views import (
     InitiateKhaltiPaymentView,
     TicketViewSet,
     VenueBookingInquiryCreateView,
+    VenueViewSet,
     VerifyEsewaPaymentView,
     VerifyKhaltiPaymentView,
 )
@@ -18,6 +20,7 @@ router = DefaultRouter()
 router.register('tickets', TicketViewSet, basename='ticket')
 router.register('events', EventViewSet, basename='event')
 router.register('category', CategoryViewSet, basename='category')
+router.register('artists', ArtistViewSet, basename='artist')
 router.register('bookings', BookingViewSet, basename='booking')
 
 urlpatterns = [
@@ -42,13 +45,14 @@ urlpatterns = [
         name='khalti_verify',
     ),
     path(
-        'booking/venue/',
+        'booking/venue-inquiries/',
         VenueBookingInquiryCreateView.as_view(),
         name='booking_venue',
     ),
     path(
-        'booking/artist/',
+        'booking/artist-inquiries/',
         ArtistBookingInquiryCreateView.as_view(),
         name='booking_artist',
     ),
+    
 ] + router.urls
