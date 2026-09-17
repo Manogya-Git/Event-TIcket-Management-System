@@ -33,25 +33,121 @@ const TermsAnd = () => {
   ];
 
   return (
-    <div style={{ background: "#f7f8fc", minHeight: "100vh", color: "#172033", fontFamily: "Inter, Arial, sans-serif" }}>
-      <header style={{ background: "linear-gradient(135deg, #111b3d, #293a83)", color: "white", padding: "72px 24px 88px" }}>
+    <div
+      style={{
+        background: "#f7f8fc",
+        minHeight: "100vh",
+        color: "#172033",
+        fontFamily: "Inter, Arial, sans-serif",
+      }}
+    >
+      <header
+        style={{
+          background: "linear-gradient(135deg, #111b3d, #293a83)",
+          color: "white",
+          padding: "72px 24px 88px",
+        }}
+      >
         <div style={{ maxWidth: 1050, margin: "auto" }}>
-          <div style={{ color: "#aabaff", fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", fontSize: 12 }}>KGarira.com</div>
-          <h1 style={{ fontSize: "clamp(34px, 6vw, 58px)", margin: "18px 0 12px", lineHeight: 1.05 }}>Terms &amp; Conditions</h1>
-          <p style={{ color: "#d8defa", margin: 0, fontSize: 16 }}>Please read these terms carefully before using our ticketing platform.</p>
+          <div
+            style={{
+              color: "#aabaff",
+              fontWeight: 700,
+              letterSpacing: 1.5,
+              textTransform: "uppercase",
+              fontSize: 12,
+            }}
+          >
+            KGarira.com
+          </div>
+          <h1
+            style={{
+              fontSize: "clamp(34px, 6vw, 58px)",
+              margin: "18px 0 12px",
+              lineHeight: 1.05,
+            }}
+          >
+            Terms &amp; Conditions
+          </h1>
+          <p style={{ color: "#d8defa", margin: 0, fontSize: 16 }}>
+            Please read these terms carefully before using our ticketing
+            platform.
+          </p>
         </div>
       </header>
-      <main style={{ maxWidth: 1050, margin: "-38px auto 0", padding: "0 24px 64px", position: "relative" }}>
-        <section style={{ background: "white", borderRadius: 16, padding: "28px clamp(22px, 5vw, 52px)", boxShadow: "0 12px 35px rgba(25,35,75,.09)", lineHeight: 1.75, fontSize: 15 }}>
-          <p style={{ color: "#68728a", fontSize: 13, fontWeight: 700, marginTop: 0 }}>LAST UPDATED · 10 FEBRUARY, 2023</p>
+      <main
+        style={{
+          maxWidth: 1050,
+          margin: "-38px auto 0",
+          padding: "0 24px 64px",
+          position: "relative",
+        }}
+      >
+        <section
+          style={{
+            background: "white",
+            borderRadius: 16,
+            padding: "28px clamp(22px, 5vw, 52px)",
+            boxShadow: "0 12px 35px rgba(25,35,75,.09)",
+            lineHeight: 1.75,
+            fontSize: 15,
+          }}
+        >
+          <p
+            style={{
+              color: "#68728a",
+              fontSize: 13,
+              fontWeight: 700,
+              marginTop: 0,
+            }}
+          >
+            LAST UPDATED · 10 FEBRUARY, 2023
+          </p>
           <h2 style={{ fontSize: 24, marginBottom: 10 }}>Introduction</h2>
-          <p>This agreement sets out the terms and conditions governing your access to the KGarira website and services. By clicking “Buy Ticket” or using our Electronic Channels, you confirm that you have read, understood, and agreed to these terms.</p>
-          <p>Welcome to KGarira.com, the online ticketing platform providing access to events and experiences. If you do not agree with these terms, please do not use our platform or services.</p>
+          <p>
+            This agreement sets out the terms and conditions governing your
+            access to the KGarira website and services. By clicking “Buy Ticket”
+            or using our Electronic Channels, you confirm that you have read,
+            understood, and agreed to these terms.
+          </p>
+          <p>
+            Welcome to KGarira.com, the online ticketing platform providing
+            access to events and experiences. If you do not agree with these
+            terms, please do not use our platform or services.
+          </p>
           <div style={{ borderTop: "1px solid #e9ecf3", margin: "28px 0" }} />
           <h2 style={{ fontSize: 24 }}>Event policies</h2>
-          {sections.map((section) => <article key={section.title} style={{ marginTop: 22 }}><h3 style={{ color: "#293a83", fontSize: 17, margin: 0 }}>{section.title}</h3><p style={{ margin: "5px 0 0", color: "#59647a" }}>{section.text}</p></article>)}
-          <article style={{ marginTop: 22 }}><h3 style={{ color: "#293a83", fontSize: 17 }}>Intellectual Property, Privacy &amp; Governing Law</h3><p style={{ margin: "5px 0 0", color: "#59647a" }}>Content on KGarira.com is protected by intellectual property laws. Please refer to our Privacy Policy for information about your personal data. These terms are governed by the laws of the jurisdiction in which KGarira.com operates.</p></article>
-          <article style={{ marginTop: 22 }}><h3 style={{ color: "#293a83", fontSize: 17 }}>Modification of Terms</h3><p style={{ margin: "5px 0 0", color: "#59647a" }}>KGarira.com may modify these terms at any time. Changes become effective when posted on the website, so please review them periodically.</p></article>
+          {sections.map((section) => (
+            <article key={section.title} style={{ marginTop: 22 }}>
+              <h3 style={{ color: "#293a83", fontSize: 17, margin: 0 }}>
+                {section.title}
+              </h3>
+              <p style={{ margin: "5px 0 0", color: "#59647a" }}>
+                {section.text}
+              </p>
+            </article>
+          ))}
+          <article style={{ marginTop: 22 }}>
+            <h3 style={{ color: "#293a83", fontSize: 17 }}>
+              Intellectual Property, Privacy &amp; Governing Law
+            </h3>
+            <p style={{ margin: "5px 0 0", color: "#59647a" }}>
+              Content on KGarira.com is protected by intellectual property laws.
+              Please refer to our Privacy Policy for information about your
+              personal data. These terms are governed by the laws of the
+              jurisdiction in which KGarira.com operates.
+            </p>
+          </article>
+          <article style={{ marginTop: 22 }}>
+            <h3 style={{ color: "#293a83", fontSize: 17 }}>
+              Modification of Terms
+            </h3>
+            <p style={{ margin: "5px 0 0", color: "#59647a" }}>
+              KGarira.com may modify these terms at any time. Changes become
+              effective when posted on the website, so please review them
+              periodically.
+            </p>
+          </article>
         </section>
       </main>
     </div>

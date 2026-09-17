@@ -14,6 +14,11 @@ import { AuthProvider } from "./context/AuthContext";
 import Dashboard from "./pages/admin/Dashboard";
 import Login from "./pages/admin/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Events from "./pages/admin/Events";
+import Bookings from "./pages/admin/Bookings";
+import Venue from "./pages/admin/Venue";
+import Artists from "./pages/admin/Artists";
+import Categories from "./pages/admin/Categories";
 
 const App = () => {
   return (
@@ -37,6 +42,11 @@ const App = () => {
           <Route path="/admin/login" element={<Login />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/admin/dashboard" element={<Dashboard />} />
+            <Route path="/admin/events" element={<Events />} />
+            <Route path="/admin/bookings" element={<Bookings />} />
+            <Route path="/admin/venue" element={<Venue />} />
+            <Route path="/admin/Artist" element={<Artists />} />
+            <Route path="/admin/categories" element={<Categories />} />
           </Route>
         </Routes>
       </BrowserRouter>
