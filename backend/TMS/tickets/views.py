@@ -45,7 +45,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
 
 class BookingViewSet(viewsets.ModelViewSet):
-    queryset = Booking.objects.all()
+    queryset = Booking.objects.select_related("ticket__event").all()
     serializer_class = BookingSerializer
 
     @action(detail=False,methods=['get']) 

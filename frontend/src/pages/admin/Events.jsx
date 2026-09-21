@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
@@ -19,6 +20,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import AddIcon from "@mui/icons-material/Add";
 
 const columns = [
   { id: "title", label: "Title", minWidth: 180 },
@@ -31,6 +33,7 @@ const columns = [
 ];
 
 const Events = () => {
+  const navigate = useNavigate();
   const { accessToken } = useAuth();
   const [rows, setRows] = useState([]);
   const [page, setPage] = useState(0);
@@ -127,13 +130,30 @@ const Events = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 p-8">
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex items-center justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-500">
             Admin
           </p>
           <h1 className="mt-2 text-3xl font-bold text-slate-900">Events</h1>
         </div>
+
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={() => navigate("/admin/events/new")}
+          sx={{
+            backgroundColor: "#0f172a",
+            borderRadius: 2,
+            textTransform: "none",
+            fontWeight: 600,
+            px: 2.5,
+            py: 1,
+            "&:hover": { backgroundColor: "#1e293b" },
+          }}
+        >
+          Create Event
+        </Button>
       </div>
 
       <div className="mx-auto w-full max-w-[1400px]">
@@ -250,6 +270,9 @@ const Events = () => {
                                 <IconButton
                                   size="small"
                                   aria-label="edit event"
+                                  onClick={() =>
+                                    navigate(`/admin/events/${row.slug}/edit`)
+                                  }
                                   sx={{
                                     color: "#0f172a",
                                     backgroundColor: "#e2e8f0",

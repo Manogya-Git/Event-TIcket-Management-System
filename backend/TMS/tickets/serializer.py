@@ -29,10 +29,14 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 class BookingSerializer(serializers.ModelSerializer):
+    event = serializers.CharField(source="ticket.event.title", read_only=True)
+    ticket_tier = serializers.CharField(source="ticket.ticket_type", read_only=True)
+
     class Meta:
         model = Booking
         fields = ["id", "ticket", "quantity", "status", "created",
-            "full_name", "email", "phone_number", "address",]
+            "full_name", "email", "phone_number", "address", "payment_method",
+            "event", "ticket_tier"]
         read_only_fields = ["status", "created"]
 
 
