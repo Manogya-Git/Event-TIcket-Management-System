@@ -15,6 +15,7 @@ from .views import (
     VerifyEsewaPaymentView,
     VerifyKhaltiPaymentView,
 )
+from .admin_views import admin_dashboard_events, admin_dashboard_stats
 
 router = DefaultRouter()
 router.register('tickets', TicketViewSet, basename='ticket')
@@ -54,5 +55,14 @@ urlpatterns = [
         ArtistBookingInquiryCreateView.as_view(),
         name='booking_artist',
     ),
+        path(
+        'api/admin/dashboard-stats/',
+        admin_dashboard_stats, name='admin-dashboard-stats',
+    ),
+    path(
+        'api/admin/events/',
+        admin_dashboard_events, name='event_page',
+    ),
+
     
 ] + router.urls
