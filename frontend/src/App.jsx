@@ -21,6 +21,8 @@ import Artists from "./pages/admin/Artists";
 import Categories from "./pages/admin/Categories";
 import AdminLayout from "./components/AdminLayout";
 import EventForm from "./components/EventForm";
+import VenueForm from "./pages/admin/VenueForm";
+import ArtistForm from "./pages/admin/ArtistForm";
 
 const App = () => {
   return (
@@ -48,7 +50,14 @@ const App = () => {
               <Route path="/admin/events" element={<Events />} />
               <Route path="/admin/bookings" element={<Bookings />} />
               <Route path="/admin/venue" element={<Venue />} />
+              <Route path="/admin/venue/new" element={<VenueForm />} />
+              <Route path="/admin/venue/:slug/edit" element={<VenueForm />} />
               <Route path="/admin/artists" element={<Artists />} />
+              <Route path="/admin/artists/new" element={<ArtistForm />} />
+              <Route
+                path="/admin/artists/:slug/edit"
+                element={<ArtistForm />}
+              />
               <Route path="/admin/categories" element={<Categories />} />
               <Route path="/admin/events/new" element={<EventForm />} />
               <Route path="/admin/events/:slug/edit" element={<EventForm />} />

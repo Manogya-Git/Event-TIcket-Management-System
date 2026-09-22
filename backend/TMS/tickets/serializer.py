@@ -1,7 +1,17 @@
 from django.db import transaction
 
 from rest_framework import serializers
-from .models import Artist, Ticket, Event, Category, Booking, Venue ,VenueBookingInquiry,ArtistBookingInquiry
+from .models import (
+    Artist,
+    Ticket,
+    Event,
+    Category,
+    Booking,
+    Venue,
+    VenueBookingInquiry,
+    ArtistBookingInquiry,
+    ContactMessage,
+)
 
 class TicketSerializer(serializers.ModelSerializer):
     class Meta:
@@ -89,5 +99,12 @@ class ArtistSerializer(serializers.ModelSerializer):
     class Meta:
         model = Artist
         fields = "__all__"
+
+
+class ContactMessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContactMessage
+        fields = ["id", "full_name", "email", "contact_number", "subject", "details", "created_at"]
+        read_only_fields = ["id", "created_at"]
 
 

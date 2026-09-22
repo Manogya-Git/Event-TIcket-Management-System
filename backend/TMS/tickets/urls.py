@@ -3,6 +3,7 @@ from django.urls import path
 
 from .views import (
     ArtistBookingInquiryCreateView,
+        ContactMessageCreateView,
     ArtistViewSet,
     BookingViewSet,
     CategoryViewSet,
@@ -22,6 +23,7 @@ router.register('tickets', TicketViewSet, basename='ticket')
 router.register('events', EventViewSet, basename='event')
 router.register('category', CategoryViewSet, basename='category')
 router.register('artists', ArtistViewSet, basename='artist')
+router.register('venues', VenueViewSet, basename='venue')
 router.register('bookings', BookingViewSet, basename='booking')
 
 urlpatterns = [
@@ -54,6 +56,11 @@ urlpatterns = [
         'booking/artist-inquiries/',
         ArtistBookingInquiryCreateView.as_view(),
         name='booking_artist',
+    ),
+    path(
+        'contact/',
+        ContactMessageCreateView.as_view(),
+        name='contact-message',
     ),
         path(
         'api/admin/dashboard-stats/',

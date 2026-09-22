@@ -6,10 +6,20 @@ import requests
 from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, viewsets
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, BasePermission, SAFE_METHODS
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import Artist, Ticket, Event, Category, Booking, Venue,   VenueBookingInquiry,ArtistBookingInquiry
+from .models import (
+    Artist,
+    Ticket,
+    Event,
+    Category,
+    Booking,
+    Venue,
+    VenueBookingInquiry,
+    ArtistBookingInquiry,
+    ContactMessage,
+)
 from .serializer import (
     ArtistSerializer,
     TicketSerializer,
@@ -21,13 +31,20 @@ from .serializer import (
     VenueSerializer,
     VerifyKhaltiPaymentSerializer,
     VenueBookingInquirySerializer,
-    ArtistBookingInquirySerializer
+    ArtistBookingInquirySerializer,
+    ContactMessageSerializer,
  
 )
 from .utils import generate_esewa_signature, verify_esewa_signature, send_booking_confirmation_email
 import uuid
 from django.conf import settings
-from rest_framework.viewsets import ReadOnlyModelViewSet
+
+
+class IsStaffOrReadOnly(BasePermission):
+    def has_permission(self, request, view):
+        return request.method in SAFE_METHODS or bool(
+            request.user and request.user.is_staff
+        )
 
 
 
@@ -43,6 +60,7 @@ class EventViewSet(viewsets.ModelViewSet):
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    permission_classes = [IsStaffOrReadOnly]
 
 class BookingViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
@@ -258,13 +276,22 @@ class ArtistBookingInquiryCreateView(generics.CreateAPIView):
     serializer_class = ArtistBookingInquirySerializer
 
 
-class VenueViewSet(ReadOnlyModelViewSet):
-    queryset = Venue.objects.all()
-    serializer_class =  VenueSerializer
+class ContactMessageCreateView(generics.CreateAPIView):
+    serializer_class = ContactMessageSerializer
+    permission_classes = [AllowAny]
 
-class ArtistViewSet(ReadOnlyModelViewSet):
+
+class VenueViewSet(viewsets.ModelViewSet):
+    queryset = Venue.objects.all()
+    serializer_class = VenueSerializer
+    permission_classes = [IsStaffOrReadOnly]
+    lookup_field = 'slug'
+
+class ArtistViewSet(viewsets.ModelViewSet):
     queryset = Artist.objects.all()
-    serializer_class =  ArtistSerializer
+    serializer_class = ArtistSerializer
+    permission_classes = [IsStaffOrReadOnly]
+    lookup_field = 'slug'
         
 
 

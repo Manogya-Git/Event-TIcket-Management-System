@@ -5,6 +5,8 @@ import EventCard from "../components/EventCard";
 import { BASE_URL } from "../api";
 import Category from "../components/Category";
 import Footer from "../components/Footer";
+import VenueSection from "../components/VenueSection";
+import ArtistSection from "../components/ArtistSection";
 
 const HomePage = () => {
   const [events, setEvents] = useState([]);
@@ -76,6 +78,8 @@ const HomePage = () => {
           )}
         </section>
         <Category />
+        <VenueSection />
+        <ArtistSection />
       </div>
     </>
   );
