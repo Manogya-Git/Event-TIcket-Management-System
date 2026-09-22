@@ -9,8 +9,13 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import Chip from "@mui/material/Chip";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
 import { BASE_URL } from "../../api";
 import { useAuth } from "../../context/AuthContext";
+import { ToggleButtonGroup } from "@mui/material";
+import { ToggleButton } from "@mui/material";
 
 const columns = [
   { id: "full_name", label: "Guest Name", minWidth: 170 },
@@ -40,6 +45,8 @@ const paymentMethodColors = {
   KHALTI: { backgroundColor: "#fee2e2", color: "#dc2626" },
 };
 
+const STATUS_OPTIONS = ["PENDING", "CONFIRMED", "CANCELLED"];
+
 const Bookings = () => {
   const { accessToken } = useAuth();
   const [rows, setRows] = useState([]);
@@ -47,33 +54,39 @@ const Bookings = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [statusFilter, setStatusFilter] = useState("ALL");
+
+  const fetchBookings = async () => {
+    if (!accessToken) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setError("");
+      const url =
+        statusFilter === "ALL"
+          ? `${BASE_URL}/bookings/`
+          : `${BASE_URL}/bookings/?status=${statusFilter}`;
+      const response = await axios.get(url, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      setRows(
+        Array.isArray(response.data)
+          ? response.data
+          : response.data.results || [],
+      );
+    } catch (fetchError) {
+      console.error("Failed to fetch bookings:", fetchError);
+      setError("Unable to load bookings right now.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchBookings = async () => {
-      if (!accessToken) {
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const response = await axios.get(`${BASE_URL}/bookings/`, {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        });
-        setRows(
-          Array.isArray(response.data)
-            ? response.data
-            : response.data.results || [],
-        );
-      } catch (fetchError) {
-        console.error("Failed to fetch bookings:", fetchError);
-        setError("Unable to load bookings right now.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchBookings();
-  }, [accessToken]);
+  }, [accessToken, statusFilter]);
 
   const formatDate = (value) => {
     if (!value) return "-";
@@ -82,6 +95,63 @@ const Bookings = () => {
       month: "short",
       day: "numeric",
     });
+  };
+
+  const handleStatusChange = async (bookingId, nextStatus) => {
+    if (!bookingId || !nextStatus || !accessToken) return;
+
+    const originalRow = rows.find(
+      (row) => row.id === bookingId || row.slug === bookingId,
+    );
+    if (!originalRow || originalRow.status === nextStatus) return;
+
+    const confirmed = window.confirm(
+      `Are you sure you want to change this booking status to ${nextStatus}?`,
+    );
+
+    if (!confirmed) return;
+
+    const candidateUrls = [];
+
+    if (originalRow.id !== undefined && originalRow.id !== null) {
+      candidateUrls.push(`${BASE_URL}/bookings/${originalRow.id}/`);
+    }
+
+    if (originalRow.slug) {
+      candidateUrls.push(`${BASE_URL}/bookings/${originalRow.slug}/`);
+    }
+
+    let requestSucceeded = false;
+
+    try {
+      for (const url of candidateUrls) {
+        try {
+          await axios.patch(
+            url,
+            { status: nextStatus },
+            {
+              headers: { Authorization: `Bearer ${accessToken}` },
+            },
+          );
+          requestSucceeded = true;
+          break;
+        } catch (patchError) {
+          if (patchError.response?.status !== 404) {
+            throw patchError;
+          }
+        }
+      }
+
+      if (!requestSucceeded) {
+        throw new Error("Booking lookup did not match the backend route.");
+      }
+
+      setError("");
+      await fetchBookings();
+    } catch (patchError) {
+      console.error("Failed to update booking status:", patchError);
+      setError("Unable to update booking status.");
+    }
   };
 
   const handleChangePage = (_event, newPage) => setPage(newPage);
@@ -108,6 +178,110 @@ const Bookings = () => {
           Review ticket bookings and payment details.
         </p>
       </div>
+      <ToggleButtonGroup
+        value={statusFilter}
+        exclusive
+        onChange={(_event, newStatus) => {
+          if (newStatus !== null) {
+            setStatusFilter(newStatus);
+            setPage(0);
+          }
+        }}
+        aria-label="booking status filter"
+        size="small"
+        sx={{
+          mb: 3,
+          p: 0.5,
+          gap: 0.5,
+          display: "flex",
+          flexWrap: "wrap",
+          border: "1px solid #e2e8f0",
+          borderRadius: 2.5,
+          backgroundColor: "#ffffff",
+          boxShadow: "0 4px 12px rgba(15, 23, 42, 0.06)",
+          "& .MuiToggleButtonGroup-grouped": {
+            m: 0,
+            border: 0,
+            borderRadius: 1.75,
+            color: "#64748b",
+            fontWeight: 700,
+            textTransform: "none",
+            letterSpacing: "0.01em",
+            px: { xs: 1.5, sm: 2 },
+            py: 0.9,
+            display: "flex",
+            alignItems: "center",
+            transition: "all 160ms ease",
+            "&:hover": {
+              backgroundColor: "#f1f5f9",
+              color: "#0f172a",
+            },
+            "&.Mui-selected": {
+              backgroundColor: "#0f172a",
+              color: "#ffffff",
+              boxShadow: "0 3px 8px rgba(15, 23, 42, 0.2)",
+              "&:hover": { backgroundColor: "#1e293b" },
+            },
+            "&:focus-visible": {
+              outline: "3px solid rgba(59, 130, 246, 0.35)",
+              outlineOffset: 2,
+            },
+          },
+        }}
+      >
+        <ToggleButton value="ALL" aria-label="all bookings">
+          <span
+            style={{
+              width: 8,
+              height: 8,
+              borderRadius: "50%",
+              backgroundColor: "#94a3b8",
+              marginRight: 6,
+              display: "inline-block",
+            }}
+          />
+          All
+        </ToggleButton>
+        <ToggleButton value="PENDING" aria-label="pending bookings">
+          <span
+            style={{
+              width: 8,
+              height: 8,
+              borderRadius: "50%",
+              backgroundColor: "#f59e0b",
+              marginRight: 6,
+              display: "inline-block",
+            }}
+          />
+          Pending
+        </ToggleButton>
+        <ToggleButton value="CONFIRMED" aria-label="confirmed bookings">
+          <span
+            style={{
+              width: 8,
+              height: 8,
+              borderRadius: "50%",
+              backgroundColor: "#16a34a",
+              marginRight: 6,
+              display: "inline-block",
+            }}
+          />
+          Confirmed
+        </ToggleButton>
+        <ToggleButton value="CANCELLED" aria-label="cancelled bookings">
+          <span
+            style={{
+              width: 8,
+              height: 8,
+              borderRadius: "50%",
+              backgroundColor: "#dc2626",
+              marginRight: 6,
+              display: "inline-block",
+            }}
+          />
+          Cancelled
+        </ToggleButton>
+      </ToggleButtonGroup>
 
       <Paper
         sx={{
@@ -195,19 +369,53 @@ const Bookings = () => {
                               fontSize: "0.92rem",
                             }}
                           >
-                            {column.id === "status" ||
-                            column.id === "ticket_tier" ||
-                            column.id === "payment_method" ? (
+                            {column.id === "status" ? (
+                              <FormControl size="small" sx={{ minWidth: 140 }}>
+                                <Select
+                                  value={row.status || "PENDING"}
+                                  onChange={(event) =>
+                                    handleStatusChange(
+                                      row.id,
+                                      event.target.value,
+                                    )
+                                  }
+                                  size="small"
+                                  sx={{
+                                    backgroundColor: statusColors[row.status]
+                                      ? statusColors[row.status].backgroundColor
+                                      : "#f1f5f9",
+                                    color: statusColors[row.status]
+                                      ? statusColors[row.status].color
+                                      : "#475569",
+                                    borderRadius: 2,
+                                    fontWeight: 700,
+                                    fontSize: "0.78rem",
+                                    ".MuiOutlinedInput-notchedOutline": {
+                                      border: "none",
+                                    },
+                                    ".MuiSelect-select": {
+                                      py: 1,
+                                      px: 1.5,
+                                    },
+                                  }}
+                                >
+                                  {STATUS_OPTIONS.map((option) => (
+                                    <MenuItem key={option} value={option}>
+                                      {option}
+                                    </MenuItem>
+                                  ))}
+                                </Select>
+                              </FormControl>
+                            ) : column.id === "ticket_tier" ||
+                              column.id === "payment_method" ? (
                               <Chip
                                 label={value || "-"}
                                 size="small"
                                 sx={{
                                   fontWeight: 700,
-                                  ...((column.id === "status"
-                                    ? statusColors[value]
-                                    : column.id === "ticket_tier"
-                                      ? ticketTierColors[value]
-                                      : paymentMethodColors[value]) || {
+                                  ...((column.id === "ticket_tier"
+                                    ? ticketTierColors[value]
+                                    : paymentMethodColors[value]) || {
                                     backgroundColor: "#f1f5f9",
                                     color: "#475569",
                                   }),

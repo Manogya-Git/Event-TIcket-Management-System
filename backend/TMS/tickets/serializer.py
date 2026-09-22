@@ -37,7 +37,7 @@ class BookingSerializer(serializers.ModelSerializer):
         fields = ["id", "ticket", "quantity", "status", "created",
             "full_name", "email", "phone_number", "address", "payment_method",
             "event", "ticket_tier"]
-        read_only_fields = ["status", "created"]
+        read_only_fields = ["created"]
 
 
     def create(self, validated_data):

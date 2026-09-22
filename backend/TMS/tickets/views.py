@@ -45,7 +45,13 @@ class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
 
 class BookingViewSet(viewsets.ModelViewSet):
-    queryset = Booking.objects.select_related("ticket__event").all()
+    def get_queryset(self):
+        queryset = Booking.objects.select_related("ticket__event").all()
+        status = self.request.query_params.get('status')
+        if status:
+            queryset = queryset.filter(status=status)
+        return queryset
+
     serializer_class = BookingSerializer
 
     @action(detail=False,methods=['get']) 
