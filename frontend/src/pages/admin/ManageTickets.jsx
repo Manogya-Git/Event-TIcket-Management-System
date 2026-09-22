@@ -52,6 +52,11 @@ const ManageTickets = () => {
     setNewTicket((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleClearTicket = () => {
+    setNewTicket({ ticket_type: "REGULAR", price: "", quantity: "" });
+    setEditingId(null);
+  };
+
   const handleCreateTicket = async (e) => {
     e.preventDefault();
 
@@ -252,7 +257,14 @@ const ManageTickets = () => {
           type="submit"
           className="inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-700"
         >
-          Add Ticket
+          {editingId ? "Update Ticket" : "Add Ticket"}
+        </button>
+        <button
+          type="button"
+          onClick={handleClearTicket}
+          className="inline-flex items-center justify-center rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+        >
+          Clear
         </button>
       </form>
 
