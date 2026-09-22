@@ -68,6 +68,14 @@ class Ticket(models.Model):
     sold_quantity = models.PositiveIntegerField(default=0)
     price = models.IntegerField()
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+            fields = ['event','ticket_type'],
+            name = 'unique_ticket_type_per_event'
+            )
+        ]
+
     def __str__(self):
         return f"{self.event.title} - {self.ticket_type}"
 

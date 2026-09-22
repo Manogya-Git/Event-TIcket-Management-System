@@ -40,6 +40,7 @@ const ManageTickets = () => {
   const [eventId, setEventId] = useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [ticketToDelete, setTicketToDelete] = useState(null);
+  const [editingId, setEditingId] = useState(null);
   const [newTicket, setNewTicket] = useState({
     ticket_type: "REGULAR",
     price: "",
@@ -53,24 +54,39 @@ const ManageTickets = () => {
 
   const handleCreateTicket = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post(
-        `${BASE_URL}/tickets/`,
-        {
-          event: eventId,
-          ticket_type: newTicket.ticket_type,
-          price: newTicket.price,
-          quantity: newTicket.quantity,
-        },
-        {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        },
-      );
 
-      setRows((prevRows) => [...prevRows, response.data]);
+    try {
+      if (editingId) {
+        const response = await axios.patch(
+          `${BASE_URL}/tickets/${editingId}/`,
+          {
+            ticket_type: newTicket.ticket_type,
+            price: newTicket.price,
+            quantity: newTicket.quantity,
+          },
+          { headers: { Authorization: `Bearer ${accessToken}` } },
+        );
+        setRows((prevRows) =>
+          prevRows.map((row) => (row.id === editingId ? response.data : row)),
+        );
+      } else {
+        const response = await axios.post(
+          `${BASE_URL}/tickets/`,
+          {
+            event: eventId,
+            ticket_type: newTicket.ticket_type,
+            price: newTicket.price,
+            quantity: newTicket.quantity,
+          },
+          { headers: { Authorization: `Bearer ${accessToken}` } },
+        );
+        setRows((prevRows) => [...prevRows, response.data]);
+      }
+
       setNewTicket({ ticket_type: "REGULAR", price: "", quantity: "" });
+      setEditingId(null);
     } catch (error) {
-      console.error("Failed to create ticket:", error);
+      console.error("Failed to save ticket:", error);
     }
   };
 
@@ -147,6 +163,15 @@ const ManageTickets = () => {
       console.error("Failed to delete ticket:", error);
       setError("Unable to delete this ticket right now.");
     }
+  };
+
+  const handleEditClick = (row) => {
+    setEditingId(row.id);
+    setNewTicket({
+      ticket_type: row.ticket_type,
+      price: row.price,
+      quantity: row.quantity,
+    });
   };
 
   return (
@@ -352,7 +377,7 @@ const ManageTickets = () => {
                         <IconButton
                           size="small"
                           aria-label="edit ticket"
-                          onClick={() => console.log("Edit ticket", row.id)}
+                          onClick={() => handleEditClick(row)}
                           sx={{ color: "#0f172a" }}
                         >
                           <EditIcon fontSize="small" />
