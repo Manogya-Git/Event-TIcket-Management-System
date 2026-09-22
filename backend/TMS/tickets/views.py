@@ -49,7 +49,12 @@ class IsStaffOrReadOnly(BasePermission):
 
 
 class TicketViewSet(viewsets.ModelViewSet):
-    queryset = Ticket.objects.all()
+    def get_queryset(self):
+        queryset = Ticket.objects.all()
+        event_slug = self.request.query_params.get('event')
+        if event_slug:
+            queryset = queryset.filter(event__slug=event_slug)
+        return queryset
     serializer_class = TicketSerializer
 
 class EventViewSet(viewsets.ModelViewSet):

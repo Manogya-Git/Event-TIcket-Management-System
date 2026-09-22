@@ -23,6 +23,7 @@ import AdminLayout from "./components/AdminLayout";
 import EventForm from "./components/EventForm";
 import VenueForm from "./pages/admin/VenueForm";
 import ArtistForm from "./pages/admin/ArtistForm";
+import ManageTickets from "./pages/admin/ManageTickets";
 
 const App = () => {
   return (
@@ -61,6 +62,10 @@ const App = () => {
               <Route path="/admin/categories" element={<Categories />} />
               <Route path="/admin/events/new" element={<EventForm />} />
               <Route path="/admin/events/:slug/edit" element={<EventForm />} />
+              <Route
+                path="/admin/events/:slug/tickets"
+                element={<ManageTickets />}
+              />
             </Route>
           </Route>
         </Routes>

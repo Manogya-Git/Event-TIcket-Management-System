@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 import { BASE_URL } from "../api";
 import { useAuth } from "../context/AuthContext";
 
@@ -104,6 +105,14 @@ const EventForm = () => {
       <div className="mx-auto w-full max-w-5xl rounded-3xl border border-slate-200 bg-white p-4 shadow-[0_12px_30px_rgba(15,23,42,0.08)] sm:p-6 lg:p-8">
         <div className="mb-6 flex flex-col gap-3 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
           <div>
+            <button
+              type="button"
+              onClick={() => navigate("/admin/events")}
+              className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-slate-500 transition hover:text-slate-900"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to events
+            </button>
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-500">
               Event
             </p>

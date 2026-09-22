@@ -12,6 +12,7 @@ import TableRow from "@mui/material/TableRow";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
 import { BASE_URL } from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import Button from "@mui/material/Button";
@@ -29,7 +30,7 @@ const columns = [
   { id: "start_date", label: "Start Date", minWidth: 130 },
   { id: "end_date", label: "End Date", minWidth: 130 },
   { id: "status", label: "Status", minWidth: 120 },
-  { id: "actions", label: "Actions", minWidth: 120 },
+  { id: "actions", label: "Actions", minWidth: 160 },
 ];
 
 const Events = () => {
@@ -267,6 +268,23 @@ const Events = () => {
                           if (column.id === "actions") {
                             value = (
                               <div className="flex items-center gap-1">
+                                <IconButton
+                                  size="small"
+                                  aria-label={`manage tickets for ${row.title}`}
+                                  title="Manage tickets"
+                                  onClick={() =>
+                                    navigate(
+                                      `/admin/events/${row.slug}/tickets`,
+                                    )
+                                  }
+                                  sx={{
+                                    color: "#166534",
+                                    backgroundColor: "#dcfce7",
+                                    "&:hover": { backgroundColor: "#bbf7d0" },
+                                  }}
+                                >
+                                  <ConfirmationNumberIcon fontSize="small" />
+                                </IconButton>
                                 <IconButton
                                   size="small"
                                   aria-label="edit event"

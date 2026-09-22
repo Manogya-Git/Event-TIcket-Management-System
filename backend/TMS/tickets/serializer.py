@@ -14,9 +14,19 @@ from .models import (
 )
 
 class TicketSerializer(serializers.ModelSerializer):
+    event_title = serializers.CharField(source="event.title", read_only=True)
+
     class Meta:
         model = Ticket
-        fields = "__all__"
+        fields = [
+            "id",
+            "event",
+            "event_title",
+            "ticket_type",
+            "quantity",
+            "sold_quantity",
+            "price",
+        ]
 
 class EventSerializer(serializers.ModelSerializer):
     tickets = TicketSerializer(many=True,read_only=True)
