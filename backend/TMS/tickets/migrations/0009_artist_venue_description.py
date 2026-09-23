@@ -1,0 +1,21 @@
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ("tickets", "0008_ticket_unique_ticket_type_per_event"),
+    ]
+
+    operations = [
+        migrations.AddField(
+            model_name="artist",
+            name="description",
+            field=models.TextField(null=True),
+        ),
+        migrations.AddField(
+            model_name="venue",
+            name="description",
+            field=models.TextField(null=True),
+        ),
+    ]

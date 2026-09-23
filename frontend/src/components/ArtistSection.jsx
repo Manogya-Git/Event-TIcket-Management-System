@@ -2,8 +2,13 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { BASE_URL } from "../api";
 import ArtistCard from "./ArtistCard";
+import { Link } from "react-router-dom";
 
-const ArtistSection = () => {
+const ArtistSection = ({
+  fullPage = false,
+  showAllButton = true,
+  title = "Featured Artists",
+}) => {
   const [artists, setArtists] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -29,7 +34,7 @@ const ArtistSection = () => {
           id="artist-section-title"
           className="mb-10 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl"
         >
-          Featured Artists
+          {title}
         </h2>
 
         {loading && (
@@ -51,10 +56,27 @@ const ArtistSection = () => {
         )}
 
         {!loading && !error && artists.length > 0 && (
-          <div className="flex gap-5 overflow-x-auto px-1 pb-4 sm:justify-start lg:justify-center">
+          <div
+            className={
+              fullPage
+                ? "grid grid-cols-1 justify-items-center gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                : "flex gap-5 overflow-x-auto px-1 pb-4 sm:justify-start lg:justify-center"
+            }
+          >
             {artists.map((artist) => (
               <ArtistCard key={artist.id || artist.slug} artist={artist} />
             ))}
+          </div>
+        )}
+
+        {showAllButton && (
+          <div className="mt-8 flex justify-center">
+            <Link
+              to="/artists"
+              className="rounded-lg bg-green-500 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-green-600"
+            >
+              List All Artists
+            </Link>
           </div>
         )}
       </div>

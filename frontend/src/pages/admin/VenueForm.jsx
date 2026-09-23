@@ -20,6 +20,7 @@ const VenueForm = () => {
     name: "",
     address: "",
     capacity: "",
+    description: "",
   });
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState("");
@@ -87,6 +88,7 @@ const VenueForm = () => {
           name: data.name || "",
           address: data.address || "",
           capacity: data.capacity ?? "",
+          description: data.description || "",
         });
         setImagePreview(mediaUrl(data.image));
       } catch (error) {
@@ -201,6 +203,24 @@ const VenueForm = () => {
                     className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3.5 pl-11 pr-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-slate-900 focus:bg-white focus:ring-4 focus:ring-slate-900/10"
                   />
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <label
+                  htmlFor="description"
+                  className="text-sm font-semibold text-slate-700"
+                >
+                  Description
+                </label>
+                <textarea
+                  id="description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  rows={5}
+                  placeholder="Add a short description about the venue"
+                  className="w-full resize-y rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-slate-900 focus:bg-white focus:ring-4 focus:ring-slate-900/10"
+                />
               </div>
 
               <div className="space-y-2">

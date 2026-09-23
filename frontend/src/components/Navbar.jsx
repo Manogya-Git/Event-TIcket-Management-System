@@ -23,6 +23,9 @@ const Navbar = () => {
         <NavLink to="/" className={eventButtonClass}>
           List Your Events
         </NavLink>
+        <NavLink to="/events" className={linkClass}>
+          Events
+        </NavLink>
         <NavLink to="/book-venue" className={linkClass}>
           Book Venue
         </NavLink>

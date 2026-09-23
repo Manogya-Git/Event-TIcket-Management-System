@@ -2,8 +2,13 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { BASE_URL } from "../api";
 import VenueCard from "./VenueCard";
+import { Link } from "react-router-dom";
 
-const VenueSection = () => {
+const VenueSection = ({
+  fullPage = false,
+  showAllButton = true,
+  title = "Venues by Cities",
+}) => {
   const [venues, setVenues] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -29,7 +34,7 @@ const VenueSection = () => {
           id="venue-section-title"
           className="mb-10 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl"
         >
-          Venues by Cities
+          {title}
         </h2>
 
         {loading && (
@@ -51,10 +56,27 @@ const VenueSection = () => {
         )}
 
         {!loading && !error && venues.length > 0 && (
-          <div className="flex gap-5 overflow-x-auto px-1 pb-4 sm:justify-start lg:justify-center">
+          <div
+            className={
+              fullPage
+                ? "grid grid-cols-1 justify-items-center gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                : "flex gap-5 overflow-x-auto px-1 pb-4 sm:justify-start lg:justify-center"
+            }
+          >
             {venues.map((venue) => (
               <VenueCard key={venue.id || venue.slug} venue={venue} />
             ))}
+          </div>
+        )}
+
+        {showAllButton && (
+          <div className="mt-8 flex justify-center">
+            <Link
+              to="/venues"
+              className="rounded-lg bg-green-500 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-green-600"
+            >
+              List All Venues
+            </Link>
           </div>
         )}
       </div>

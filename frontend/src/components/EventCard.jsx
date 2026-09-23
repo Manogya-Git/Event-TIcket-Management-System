@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { formatDate } from "../utils/dateUtils";
 import { mediaUrl } from "../api";
 
@@ -7,6 +8,8 @@ const Icon = ({ children }) => (
 );
 
 const EventCard = ({ event }) => {
+  const navigate = useNavigate();
+
   if (!event) return null;
 
   const tickets = event.tickets ?? [];
@@ -34,7 +37,13 @@ const EventCard = ({ event }) => {
       <div className="flex w-full flex-col items-start gap-6 text-left md:w-[54%]">
         <div className="flex items-start gap-3">
           <Icon>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
               <path
                 d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"
                 stroke="currentColor"
@@ -55,9 +64,28 @@ const EventCard = ({ event }) => {
 
         <div className="flex items-center gap-3 text-lg text-white">
           <Icon>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" strokeWidth="1.8" />
-              <path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <rect
+                x="3"
+                y="5"
+                width="18"
+                height="16"
+                rx="2"
+                stroke="currentColor"
+                strokeWidth="1.8"
+              />
+              <path
+                d="M3 10h18M8 3v4M16 3v4"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+              />
             </svg>
           </Icon>
           <p>{formatDate(event.start_date)}</p>
@@ -65,7 +93,13 @@ const EventCard = ({ event }) => {
 
         <div className="flex items-center gap-3 text-lg uppercase tracking-wide text-white">
           <Icon>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
               <path
                 d="M4 21V8.5L12 3l8 5.5V21"
                 stroke="currentColor"
@@ -80,7 +114,13 @@ const EventCard = ({ event }) => {
 
         <div className="flex items-start gap-3 text-lg text-white">
           <Icon>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
               <path
                 d="M4 9a3 3 0 0 0 0 6h16a3 3 0 0 0 0-6H4Z"
                 stroke="currentColor"
@@ -100,13 +140,13 @@ const EventCard = ({ event }) => {
 
         <button
           type="button"
+          onClick={() => navigate(`/buy-tickets/${event.slug}`)}
           className="mt-2 rounded-md bg-lime-400 px-8 py-2.5 text-sm font-bold tracking-wide text-black uppercase transition-colors hover:bg-lime-300"
         >
           Buy Tickets
         </button>
       </div>
     </div>
-    
   );
 };
 

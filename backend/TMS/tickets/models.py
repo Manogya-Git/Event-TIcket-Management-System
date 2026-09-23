@@ -115,6 +115,7 @@ class Venue(models.Model):
     address = models.CharField(max_length=255, blank=True)
     image = models.ImageField(upload_to='uploads/venue/',blank=True, null=True)
     capacity = models.PositiveIntegerField(default=0)
+    description = models.TextField(null=True)
 
     def save(self,*args,**kwargs):
         if not self.slug:
@@ -134,7 +135,7 @@ class Artist(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=150, unique=True,blank=True, null=True)
     image = models.ImageField(upload_to='uploads/artist/',blank=True, null=True)
-    
+    description = models.TextField(null=True)
     def save(self,*args,**kwargs):
         if not self.slug:
             base_slug = slugify(self.name)
@@ -148,6 +149,7 @@ class Artist(models.Model):
 
     def __str__(self):
         return f"- {self.name} "
+    
 
 class BookingInquiry(models.Model):
     full_name = models.CharField(max_length=100)

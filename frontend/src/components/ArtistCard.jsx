@@ -1,12 +1,16 @@
 import React from "react";
 import { Mic2 } from "lucide-react";
 import { mediaUrl } from "../api";
+import { Link } from "react-router-dom";
 
 const ArtistCard = ({ artist }) => {
   const image = mediaUrl(artist.image);
 
   return (
-    <article className="group w-[255px] shrink-0 overflow-hidden rounded-md border border-slate-200 bg-white shadow-[0_3px_7px_rgba(15,23,42,0.2)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_10px_20px_rgba(15,23,42,0.16)]">
+    <Link
+      to={`/artists/${artist.slug}`}
+      className="group block w-[255px] shrink-0 overflow-hidden rounded-md border border-slate-200 bg-white shadow-[0_3px_7px_rgba(15,23,42,0.2)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_10px_20px_rgba(15,23,42,0.16)]"
+    >
       <div className="h-[210px] w-full overflow-hidden bg-slate-100">
         {image ? (
           <img
@@ -28,7 +32,7 @@ const ArtistCard = ({ artist }) => {
           {artist.name}
         </h3>
       </div>
-    </article>
+    </Link>
   );
 };
 

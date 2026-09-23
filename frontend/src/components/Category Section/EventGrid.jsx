@@ -5,7 +5,7 @@ import { Calendar, MapPin, Tag } from "lucide-react";
 import { formatDate } from "../../utils/dateUtils";
 import { useNavigate } from "react-router-dom";
 
-const EventGrid = () => {
+const EventGrid = ({ activeCategory }) => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -48,10 +48,17 @@ const EventGrid = () => {
     );
   }
 
+  const filteredEvents =
+    activeCategory === "All"
+      ? events
+      : events.filter(
+          (event) => String(event.category) === String(activeCategory),
+        );
+
   return (
     <div className="w-full flex justify-center px-4 py-6">
       <div className="flex flex-wrap justify-center gap-8 max-w-7xl">
-        {events.map((event) => (
+        {filteredEvents.map((event) => (
           <div
             key={event.id}
             className="bg-white rounded-2xl shadow-md overflow-hidden w-80 flex flex-col hover:shadow-lg transition-shadow duration-200"
@@ -103,6 +110,9 @@ const EventGrid = () => {
             </div>
           </div>
         ))}
+        {filteredEvents.length === 0 && (
+          <p className="py-10 text-gray-500">No events in this category.</p>
+        )}
       </div>
     </div>
   );

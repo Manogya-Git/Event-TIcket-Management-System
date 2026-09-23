@@ -10,6 +10,7 @@ const ArtistForm = () => {
   const navigate = useNavigate();
   const { accessToken } = useAuth();
   const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState("");
   const [loading, setLoading] = useState(Boolean(slug));
@@ -25,6 +26,7 @@ const ArtistForm = () => {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
         setName(response.data.name || "");
+        setDescription(response.data.description || "");
         setImagePreview(mediaUrl(response.data.image));
       } catch (requestError) {
         console.error("Failed to fetch artist:", requestError);
@@ -59,6 +61,7 @@ const ArtistForm = () => {
 
     const data = new FormData();
     data.append("name", name);
+    data.append("description", description);
     if (image) data.append("image", image);
 
     try {
@@ -130,6 +133,23 @@ const ArtistForm = () => {
                 required
                 placeholder="e.g. The Local Band"
                 className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-slate-900 focus:bg-white focus:ring-4 focus:ring-slate-900/10"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label
+                htmlFor="artist-description"
+                className="text-sm font-semibold text-slate-700"
+              >
+                Description
+              </label>
+              <textarea
+                id="artist-description"
+                value={description}
+                onChange={(event) => setDescription(event.target.value)}
+                rows={5}
+                placeholder="Add a short description about the artist"
+                className="w-full resize-y rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-slate-900 focus:bg-white focus:ring-4 focus:ring-slate-900/10"
               />
             </div>
 

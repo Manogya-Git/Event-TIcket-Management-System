@@ -1,6 +1,4 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { BASE_URL } from "../../api";
+import React from "react";
 import {
   LayoutGrid,
   Music,
@@ -31,22 +29,7 @@ const ICON_MAP = {
 
 const getIcon = (name) => ICON_MAP[name?.toLowerCase()] || Sparkles;
 
-const CategoryButtons = () => {
-  const [categories, setCategories] = useState([]);
-  const [activeCategory, setActiveCategory] = useState("All");
-
-  useEffect(() => {
-    axios
-      .get(`${BASE_URL}/category/`)
-      .then((response) => {
-        console.log("Categories:", response.data);
-        setCategories(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching categories:", error);
-      });
-  }, []);
-
+const CategoryButtons = ({ categories, activeCategory, setActiveCategory }) => {
   const baseBtn =
     "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-150";
   const inactiveBtn =
@@ -78,9 +61,9 @@ const CategoryButtons = () => {
             <button
               key={category.id}
               className={`${baseBtn} ${
-                activeCategory === category.name ? activeBtn : inactiveBtn
+                activeCategory === category.id ? activeBtn : inactiveBtn
               }`}
-              onClick={() => setActiveCategory(category.name)}
+              onClick={() => setActiveCategory(category.id)}
             >
               <Icon size={16} />
               {category.name}

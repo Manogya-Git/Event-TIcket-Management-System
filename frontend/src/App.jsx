@@ -24,6 +24,11 @@ import EventForm from "./components/EventForm";
 import VenueForm from "./pages/admin/VenueForm";
 import ArtistForm from "./pages/admin/ArtistForm";
 import ManageTickets from "./pages/admin/ManageTickets";
+import EventsPage from "./pages/EventsPage";
+import ArtistsPage from "./pages/ArtistsPage";
+import VenuesPage from "./pages/VenuesPage";
+import IndividualArtist from "./pages/IndividualArtist";
+import IndividualVenue from "./pages/IndividualVenue";
 
 const App = () => {
   return (
@@ -32,6 +37,11 @@ const App = () => {
         <Routes>
           <Route element={<MainLayout />}>
             <Route path="/" element={<HomePage />} />
+            <Route path="/events" element={<EventsPage />} />
+            <Route path="/artists" element={<ArtistsPage />} />
+            <Route path="/artists/:slug" element={<IndividualArtist />} />
+            <Route path="/venues" element={<VenuesPage />} />
+            <Route path="/venues/:slug" element={<IndividualVenue />} />
             <Route path="/book-venue" element={<BookVenue />} />
             <Route path="/book-artist" element={<BookArtist />} />
             <Route path="/contact" element={<Contact />} />

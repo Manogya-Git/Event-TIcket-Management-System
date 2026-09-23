@@ -292,7 +292,14 @@ const Bookings = () => {
           boxShadow: "0 10px 25px rgba(15, 23, 42, 0.05)",
         }}
       >
-        <TableContainer sx={{ maxHeight: 620, background: "#ffffff" }}>
+        <TableContainer
+          sx={{
+            maxHeight: 620,
+            overflowX: "auto",
+            background: "#ffffff",
+            WebkitOverflowScrolling: "touch",
+          }}
+        >
           <Table
             stickyHeader
             aria-label="bookings table"
@@ -441,6 +448,18 @@ const Bookings = () => {
           rowsPerPage={rowsPerPage}
           onRowsPerPageChange={handleChangeRowsPerPage}
           rowsPerPageOptions={[5, 10, 25]}
+          sx={{
+            ".MuiTablePagination-toolbar": {
+              minHeight: { xs: 96, sm: 52 },
+              flexWrap: { xs: "wrap", sm: "nowrap" },
+              justifyContent: { xs: "center", sm: "flex-end" },
+              py: { xs: 1, sm: 0 },
+            },
+            ".MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows":
+              {
+                fontSize: { xs: "0.75rem", sm: "0.875rem" },
+              },
+          }}
         />
       </Paper>
     </div>
