@@ -57,7 +57,7 @@ class BookingSerializer(serializers.ModelSerializer):
         fields = ["id", "ticket", "quantity", "status", "created",
             "full_name", "email", "phone_number", "address", "payment_method",
             "event", "ticket_tier"]
-        read_only_fields = ["created"]
+        read_only_fields = ["status", "created"]
 
 
     def create(self, validated_data):
@@ -72,9 +72,6 @@ class BookingSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(
                     "Not enough tickets available for this booking "
                 )
-
-            ticket.sold_quantity +=quantity
-            ticket.save()
 
             booking = Booking.objects.create(**validated_data)
 

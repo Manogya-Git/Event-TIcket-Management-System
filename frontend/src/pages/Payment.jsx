@@ -76,7 +76,8 @@ const Payment = () => {
     } catch (err) {
       if (err.response?.status === 400) {
         setError(
-          err.response.data.non_field_errors?.[0] ||
+          err.response.data.error ||
+            err.response.data.non_field_errors?.[0] ||
             JSON.stringify(err.response.data),
         );
       } else {

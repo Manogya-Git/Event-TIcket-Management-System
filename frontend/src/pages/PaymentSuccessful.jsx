@@ -8,6 +8,7 @@ const PaymentSuccessful = () => {
   const navigate = useNavigate();
   const [status, setStatus] = useState("verifying");
   const [booking, setBooking] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     const verifyPayment = async () => {
@@ -34,6 +35,10 @@ const PaymentSuccessful = () => {
         setStatus(paymentStatus === "CONFIRMED" ? "CONFIRMED" : "failed");
       } catch (error) {
         console.error(error);
+        setErrorMessage(
+          error.response?.data?.error ||
+            "We couldn't verify this eSewa payment. Please try again.",
+        );
         setStatus("failed");
       }
     };
@@ -83,7 +88,8 @@ const PaymentSuccessful = () => {
               {status === "verifying" &&
                 "Checking your payment. This usually takes a few seconds."}
               {status === "failed" &&
-                "We couldn't confirm this transaction. No amount was charged if the payment was cancelled."}
+                (errorMessage ||
+                  "We couldn't confirm this transaction. No amount was charged if the payment was cancelled.")}
               {status === "CONFIRMED" &&
                 "Your ticket confirmation is on its way to your email."}
             </p>

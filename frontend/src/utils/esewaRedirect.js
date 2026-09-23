@@ -25,7 +25,7 @@ export function redirectToEsewa(payload, formActionUrl) {
 
   ESEWA_FIELDS.forEach((key) => {
     const value = payload[key];
-    if (value == null || value === "") return;
+    if (value == null) return;
     const input = document.createElement("input");
     input.type = "hidden";
     input.name = key;
