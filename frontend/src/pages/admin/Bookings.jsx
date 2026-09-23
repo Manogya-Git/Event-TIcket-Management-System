@@ -12,10 +12,17 @@ import Chip from "@mui/material/Chip";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 import { BASE_URL } from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { ToggleButtonGroup } from "@mui/material";
 import { ToggleButton } from "@mui/material";
+import Button from "@mui/material/Button";
+import RefreshIcon from "@mui/icons-material/Refresh";
 
 const columns = [
   { id: "full_name", label: "Guest Name", minWidth: 170 },
@@ -55,14 +62,17 @@ const Bookings = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
+  const [refreshing, setRefreshing] = useState(false);
+  const [pendingStatusChange, setPendingStatusChange] = useState(null);
 
-  const fetchBookings = async () => {
+  const fetchBookings = async (showRefreshState = false) => {
     if (!accessToken) {
       setLoading(false);
       return;
     }
 
     try {
+      if (showRefreshState) setRefreshing(true);
       setError("");
       const url =
         statusFilter === "ALL"
@@ -81,11 +91,16 @@ const Bookings = () => {
       setError("Unable to load bookings right now.");
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
   useEffect(() => {
     fetchBookings();
+
+    const handleWindowFocus = () => fetchBookings(true);
+    window.addEventListener("focus", handleWindowFocus);
+    return () => window.removeEventListener("focus", handleWindowFocus);
   }, [accessToken, statusFilter]);
 
   const formatDate = (value) => {
@@ -97,7 +112,7 @@ const Bookings = () => {
     });
   };
 
-  const handleStatusChange = async (bookingId, nextStatus) => {
+  const handleStatusChange = (bookingId, nextStatus) => {
     if (!bookingId || !nextStatus || !accessToken) return;
 
     const originalRow = rows.find(
@@ -105,11 +120,19 @@ const Bookings = () => {
     );
     if (!originalRow || originalRow.status === nextStatus) return;
 
-    const confirmed = window.confirm(
-      `Are you sure you want to change this booking status to ${nextStatus}?`,
-    );
+    setPendingStatusChange({ bookingId, nextStatus });
+  };
 
-    if (!confirmed) return;
+  const confirmStatusChange = async () => {
+    if (!pendingStatusChange) return;
+
+    const { bookingId, nextStatus } = pendingStatusChange;
+    setPendingStatusChange(null);
+
+    const originalRow = rows.find(
+      (row) => row.id === bookingId || row.slug === bookingId,
+    );
+    if (!originalRow) return;
 
     const candidateUrls = [];
 
@@ -167,16 +190,30 @@ const Bookings = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-8">
-      <div className="mb-6">
-        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-500">
-          Admin
-        </p>
-        <h1 className="mt-2 text-2xl font-bold text-slate-900 sm:text-3xl">
-          Bookings
-        </h1>
-        <p className="mt-2 text-sm text-slate-500">
-          Review ticket bookings and payment details.
-        </p>
+      <div className="mb-6 flex items-end justify-between gap-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-500">
+            Admin
+          </p>
+          <h1 className="mt-2 text-2xl font-bold text-slate-900 sm:text-3xl">
+            Bookings
+          </h1>
+          <p className="mt-2 text-sm text-slate-500">
+            Review ticket bookings and payment details.
+          </p>
+        </div>
+        <Button
+          variant="outlined"
+          startIcon={<RefreshIcon />}
+          onClick={() => {
+            setPage(0);
+            fetchBookings(true);
+          }}
+          disabled={refreshing}
+          sx={{ textTransform: "none", whiteSpace: "nowrap" }}
+        >
+          {refreshing ? "Refreshing..." : "Refresh"}
+        </Button>
       </div>
       <ToggleButtonGroup
         value={statusFilter}
@@ -462,6 +499,34 @@ const Bookings = () => {
           }}
         />
       </Paper>
+
+      <Dialog
+        open={Boolean(pendingStatusChange)}
+        onClose={() => setPendingStatusChange(null)}
+        aria-labelledby="status-change-dialog-title"
+        aria-describedby="status-change-dialog-description"
+      >
+        <DialogTitle id="status-change-dialog-title">
+          Change booking status?
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="status-change-dialog-description">
+            Are you sure you want to change this booking to{" "}
+            <strong>{pendingStatusChange?.nextStatus}</strong>?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setPendingStatusChange(null)}>Cancel</Button>
+          <Button
+            onClick={confirmStatusChange}
+            variant="contained"
+            color="primary"
+            autoFocus
+          >
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

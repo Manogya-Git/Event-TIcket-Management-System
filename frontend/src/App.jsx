@@ -29,6 +29,8 @@ import ArtistsPage from "./pages/ArtistsPage";
 import VenuesPage from "./pages/VenuesPage";
 import IndividualArtist from "./pages/IndividualArtist";
 import IndividualVenue from "./pages/IndividualVenue";
+import ArtistInquiries from "./pages/admin/ArtistInquiries";
+import VenueInquiries from "./pages/admin/VenueInquiries";
 
 const App = () => {
   return (
@@ -53,6 +55,7 @@ const App = () => {
               <Route path="payment" element={<Payment />} />
             </Route>
             <Route path="payment/success/" element={<PaymentSuccessful />} />
+            <Route path="payment/failure" element={<PaymentSuccessful />} />
           </Route>
           <Route path="/admin/login" element={<Login />} />
           <Route element={<ProtectedRoute />}>
@@ -60,6 +63,14 @@ const App = () => {
               <Route path="/admin/dashboard" element={<Dashboard />} />
               <Route path="/admin/events" element={<Events />} />
               <Route path="/admin/bookings" element={<Bookings />} />
+              <Route
+                path="/admin/artist-inquiries"
+                element={<ArtistInquiries />}
+              />
+              <Route
+                path="/admin/venue-inquiries"
+                element={<VenueInquiries />}
+              />
               <Route path="/admin/venue" element={<Venue />} />
               <Route path="/admin/venue/new" element={<VenueForm />} />
               <Route path="/admin/venue/:slug/edit" element={<VenueForm />} />

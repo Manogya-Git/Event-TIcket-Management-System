@@ -90,14 +90,46 @@ class VerifyKhaltiPaymentSerializer(serializers.Serializer):
     pidx = serializers.CharField()
 
 class VenueBookingInquirySerializer(serializers.ModelSerializer):
+    venue_name = serializers.CharField(source="venue.name", read_only=True)
+
     class Meta:
         model = VenueBookingInquiry
-        fields = "__all__"
+        fields = [
+            "id",
+            "full_name",
+            "email",
+            "phone_number",
+            "address",
+            "event_name",
+            "event_category",
+            "company_name",
+            "company_address",
+            "event_date",
+            "message",
+            "venue",
+            "venue_name",
+        ]
 
 class ArtistBookingInquirySerializer(serializers.ModelSerializer):
+    artist_name = serializers.CharField(source="artist.name", read_only=True)
+
     class Meta:
         model = ArtistBookingInquiry
-        fields = "__all__"
+        fields = [
+            "id",
+            "full_name",
+            "email",
+            "phone_number",
+            "address",
+            "event_name",
+            "event_category",
+            "company_name",
+            "company_address",
+            "event_date",
+            "message",
+            "artist",
+            "artist_name",
+        ]
 
 class VenueSerializer(serializers.ModelSerializer):
     class Meta:

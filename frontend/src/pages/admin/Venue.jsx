@@ -20,6 +20,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import { BASE_URL, mediaUrl } from "../../api";
 import { useAuth } from "../../context/AuthContext";
 
@@ -241,6 +242,18 @@ const Venue = () => {
                           }}
                         >
                           <EditIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton
+                          size="small"
+                          aria-label={`send inquiry for ${row.name}`}
+                          onClick={() => navigate("/admin/venue-inquiries")}
+                          sx={{
+                            color: "#166534",
+                            backgroundColor: "#dcfce7",
+                            mr: 1,
+                          }}
+                        >
+                          <EventAvailableIcon fontSize="small" />
                         </IconButton>
                         <IconButton
                           size="small"

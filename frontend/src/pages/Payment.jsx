@@ -33,6 +33,7 @@ const Payment = () => {
         email: personalDetails.email,
         phone_number: personalDetails.phone,
         address: personalDetails.address,
+        payment_method: selectedMethod.toUpperCase(),
       });
 
       const booking = response.data;

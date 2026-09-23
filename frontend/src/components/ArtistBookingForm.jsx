@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { CalendarDays } from "lucide-react";
 import { BASE_URL } from "../api";
 
 const ArtistBookingForm = () => {
@@ -197,16 +198,20 @@ const ArtistBookingForm = () => {
               >
                 Event Date<span className="text-lime-400">*</span>
               </label>
-              <input
-                type="date"
-                id="event_date"
-                name="event_date"
-                value={formData.event_date}
-                onChange={handleChange}
-                min={new Date().toISOString().split("T")[0]}
-                className={inputClass}
-                required
-              />
+              <div className="relative">
+                <CalendarDays className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-lime-400" />
+                <input
+                  type="date"
+                  id="event_date"
+                  name="event_date"
+                  value={formData.event_date}
+                  onChange={handleChange}
+                  min={new Date().toISOString().split("T")[0]}
+                  onClick={(event) => event.currentTarget.showPicker?.()}
+                  className={`${inputClass} cursor-pointer pr-12`}
+                  required
+                />
+              </div>
             </div>
 
             <div className="group md:col-span-2">

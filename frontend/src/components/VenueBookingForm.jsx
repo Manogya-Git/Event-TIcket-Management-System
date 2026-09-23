@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { CalendarDays } from "lucide-react";
 import { BASE_URL } from "../api";
 
 const VenueBookingForm = ({ artistId }) => {
@@ -10,12 +11,14 @@ const VenueBookingForm = ({ artistId }) => {
     address: "",
     event_name: "",
     event_category: "",
+    venue: "",
     company_name: "",
     company_address: "",
     event_date: "",
     message: "",
   });
   const [categories, setCategories] = useState([]);
+  const [venues, setVenues] = useState([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -29,7 +32,17 @@ const VenueBookingForm = ({ artistId }) => {
       }
     };
 
+    const fetchVenues = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/venues/`);
+        setVenues(response.data || []);
+      } catch (error) {
+        console.error("Failed to fetch venues:", error);
+      }
+    };
+
     fetchCategories();
+    fetchVenues();
   }, []);
 
   const handleChange = (e) => {
@@ -61,6 +74,7 @@ const VenueBookingForm = ({ artistId }) => {
         address: "",
         event_name: "",
         event_category: "",
+        venue: "",
         company_name: "",
         company_address: "",
         event_date: "",
@@ -183,16 +197,20 @@ const VenueBookingForm = ({ artistId }) => {
               >
                 Event Date<span className="text-lime-400">*</span>
               </label>
-              <input
-                type="date"
-                id="event_date"
-                name="event_date"
-                value={formData.event_date}
-                onChange={handleChange}
-                min={new Date().toISOString().split("T")[0]}
-                className={inputClass}
-                required
-              />
+              <div className="relative">
+                <CalendarDays className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-lime-400" />
+                <input
+                  type="date"
+                  id="event_date"
+                  name="event_date"
+                  value={formData.event_date}
+                  onChange={handleChange}
+                  min={new Date().toISOString().split("T")[0]}
+                  onClick={(event) => event.currentTarget.showPicker?.()}
+                  className={`${inputClass} cursor-pointer pr-12`}
+                  required
+                />
+              </div>
             </div>
 
             <div className="group md:col-span-2">
@@ -252,6 +270,30 @@ const VenueBookingForm = ({ artistId }) => {
                 {categories.map((category) => (
                   <option key={category.id} value={category.id}>
                     {category.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="group">
+              <label
+                htmlFor="venue"
+                className="text-sm font-medium text-neutral-300"
+              >
+                Venue<span className="text-lime-400">*</span>
+              </label>
+              <select
+                id="venue"
+                name="venue"
+                value={formData.venue}
+                onChange={handleChange}
+                className={`${inputClass} appearance-none`}
+                required
+              >
+                <option value="">Select a venue</option>
+                {venues.map((venue) => (
+                  <option key={venue.id} value={venue.id}>
+                    {venue.name}
                   </option>
                 ))}
               </select>

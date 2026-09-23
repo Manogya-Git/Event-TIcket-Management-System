@@ -20,13 +20,13 @@ import DialogTitle from "@mui/material/DialogTitle";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import { BASE_URL, mediaUrl } from "../../api";
 import { useAuth } from "../../context/AuthContext";
 
 const columns = [
   { id: "image", label: "Image", minWidth: 90 },
   { id: "name", label: "Name", minWidth: 220 },
-  { id: "slug", label: "Slug", minWidth: 220 },
   { id: "actions", label: "Actions", minWidth: 120 },
 ];
 
@@ -206,14 +206,6 @@ const Artists = () => {
                       >
                         {row.name || "-"}
                       </TableCell>
-                      <TableCell
-                        sx={{
-                          color: "#64748b",
-                          borderBottom: "1px solid #e2e8f0",
-                        }}
-                      >
-                        {row.slug || "-"}
-                      </TableCell>
                       <TableCell sx={{ borderBottom: "1px solid #e2e8f0" }}>
                         <IconButton
                           size="small"
@@ -228,6 +220,18 @@ const Artists = () => {
                           }}
                         >
                           <EditIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton
+                          size="small"
+                          aria-label={`send inquiry for ${row.name}`}
+                          onClick={() => navigate("/admin/artist-inquiries")}
+                          sx={{
+                            color: "#166534",
+                            backgroundColor: "#dcfce7",
+                            mr: 1,
+                          }}
+                        >
+                          <EventAvailableIcon fontSize="small" />
                         </IconButton>
                         <IconButton
                           size="small"

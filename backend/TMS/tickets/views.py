@@ -69,7 +69,9 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 class BookingViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
-        queryset = Booking.objects.select_related("ticket__event").all()
+        queryset = Booking.objects.select_related("ticket__event").order_by(
+            "-created", "-id"
+        )
         status = self.request.query_params.get('status')
         if status:
             queryset = queryset.filter(status=status)
@@ -276,9 +278,17 @@ class VenueBookingInquiryCreateView(generics.CreateAPIView):
     queryset = VenueBookingInquiry.objects.all()
     serializer_class = VenueBookingInquirySerializer
 
+    def get(self, request, *args, **kwargs):
+        serializer = self.get_serializer(self.get_queryset(), many=True)
+        return Response(serializer.data)
+
 class ArtistBookingInquiryCreateView(generics.CreateAPIView):
     queryset = ArtistBookingInquiry.objects.all()
     serializer_class = ArtistBookingInquirySerializer
+
+    def get(self, request, *args, **kwargs):
+        serializer = self.get_serializer(self.get_queryset(), many=True)
+        return Response(serializer.data)
 
 
 class ContactMessageCreateView(generics.CreateAPIView):
