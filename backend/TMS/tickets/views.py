@@ -5,7 +5,7 @@ import requests
 
 from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
-from rest_framework import generics, viewsets
+from rest_framework import generics, status, viewsets
 from rest_framework.permissions import AllowAny, BasePermission, SAFE_METHODS
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -279,21 +279,48 @@ class VerifyKhaltiPaymentView(APIView):
                         "status": booking.status,
         })
 
-class VenueBookingInquiryCreateView(generics.CreateAPIView):
-    queryset = VenueBookingInquiry.objects.all()
+class VenueBookingInquiryCreateView(
+    generics.GenericAPIView,
+    generics.mixins.ListModelMixin,
+    generics.mixins.CreateModelMixin,
+    generics.mixins.DestroyModelMixin,
+):
+    queryset = VenueBookingInquiry.objects.all().order_by("-id")
     serializer_class = VenueBookingInquirySerializer
+    permission_classes = [AllowAny]
 
     def get(self, request, *args, **kwargs):
-        serializer = self.get_serializer(self.get_queryset(), many=True)
-        return Response(serializer.data)
+        if kwargs.get("pk") is not None:
+            return self.retrieve(request, *args, **kwargs)
+        return self.list(request, *args, **kwargs)
 
-class ArtistBookingInquiryCreateView(generics.CreateAPIView):
-    queryset = ArtistBookingInquiry.objects.all()
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
+
+
+class ArtistBookingInquiryCreateView(
+    generics.GenericAPIView,
+    generics.mixins.ListModelMixin,
+    generics.mixins.CreateModelMixin,
+    generics.mixins.DestroyModelMixin,
+):
+    queryset = ArtistBookingInquiry.objects.all().order_by("-id")
     serializer_class = ArtistBookingInquirySerializer
+    permission_classes = [AllowAny]
 
     def get(self, request, *args, **kwargs):
-        serializer = self.get_serializer(self.get_queryset(), many=True)
-        return Response(serializer.data)
+        if kwargs.get("pk") is not None:
+            return self.retrieve(request, *args, **kwargs)
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
 
 
 class ContactMessageCreateView(generics.CreateAPIView):

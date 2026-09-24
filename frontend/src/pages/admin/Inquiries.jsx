@@ -10,7 +10,14 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import Chip from "@mui/material/Chip";
 import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "../../api";
 import { useAuth } from "../../context/AuthContext";
@@ -40,6 +47,10 @@ const Inquiries = ({ inquiryType, endpoint, title }) => {
       : inquiryType === "Artist"
         ? [...baseColumns.slice(0, 5), artistColumn, ...baseColumns.slice(5)]
         : baseColumns;
+  const tableColumns = [
+    ...columns,
+    { id: "actions", label: "Actions", minWidth: 100 },
+  ];
   const navigate = useNavigate();
   const { accessToken } = useAuth();
   const [rows, setRows] = useState([]);
@@ -47,6 +58,7 @@ const Inquiries = ({ inquiryType, endpoint, title }) => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [selectedInquiry, setSelectedInquiry] = useState(null);
 
   useEffect(() => {
     if (!accessToken) {
@@ -75,7 +87,25 @@ const Inquiries = ({ inquiryType, endpoint, title }) => {
     };
 
     fetchInquiries();
-  }, [accessToken]);
+  }, [accessToken, endpoint, inquiryType]);
+
+  const handleDelete = async () => {
+    if (!selectedInquiry || !accessToken) return;
+
+    try {
+      await axios.delete(`${BASE_URL}${endpoint}${selectedInquiry.id}/`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+
+      setRows((currentRows) =>
+        currentRows.filter((row) => row.id !== selectedInquiry.id),
+      );
+      setSelectedInquiry(null);
+    } catch (requestError) {
+      console.error("Failed to delete inquiry:", requestError);
+      setError("Unable to delete this inquiry right now.");
+    }
+  };
 
   if (loading) {
     return <p className="p-8 text-slate-600">Loading inquiries...</p>;
@@ -107,6 +137,30 @@ const Inquiries = ({ inquiryType, endpoint, title }) => {
         </p>
       </div>
 
+      <Dialog
+        open={Boolean(selectedInquiry)}
+        onClose={() => setSelectedInquiry(null)}
+        aria-labelledby="delete-inquiry-dialog-title"
+      >
+        <DialogTitle id="delete-inquiry-dialog-title">
+          Delete Inquiry
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete this{" "}
+            {selectedInquiry?.type?.toLowerCase()} inquiry for{" "}
+            {selectedInquiry?.full_name || "this person"}? This action cannot be
+            undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setSelectedInquiry(null)}>Cancel</Button>
+          <Button onClick={handleDelete} color="error" variant="contained">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <Paper
         sx={{
           width: "100%",
@@ -124,7 +178,7 @@ const Inquiries = ({ inquiryType, endpoint, title }) => {
           >
             <TableHead>
               <TableRow>
-                {columns.map((column) => (
+                {tableColumns.map((column) => (
                   <TableCell
                     key={column.id}
                     sx={{
@@ -147,7 +201,7 @@ const Inquiries = ({ inquiryType, endpoint, title }) => {
               {error ? (
                 <TableRow>
                   <TableCell
-                    colSpan={columns.length}
+                    colSpan={tableColumns.length}
                     align="center"
                     sx={{ py: 6, color: "#b91c1c" }}
                   >
@@ -157,7 +211,7 @@ const Inquiries = ({ inquiryType, endpoint, title }) => {
               ) : rows.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={columns.length}
+                    colSpan={tableColumns.length}
                     align="center"
                     sx={{ py: 6, color: "#64748b" }}
                   >
@@ -169,7 +223,7 @@ const Inquiries = ({ inquiryType, endpoint, title }) => {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => (
                     <TableRow hover key={row.inquiryId}>
-                      {columns.map((column) => (
+                      {tableColumns.map((column) => (
                         <TableCell
                           key={column.id}
                           sx={{
@@ -185,6 +239,15 @@ const Inquiries = ({ inquiryType, endpoint, title }) => {
                                 row.type === "Artist" ? "primary" : "success"
                               }
                             />
+                          ) : column.id === "actions" ? (
+                            <IconButton
+                              aria-label={`delete ${row.full_name || "inquiry"}`}
+                              color="error"
+                              onClick={() => setSelectedInquiry(row)}
+                              size="small"
+                            >
+                              <DeleteIcon fontSize="small" />
+                            </IconButton>
                           ) : (
                             row[column.id] || "-"
                           )}

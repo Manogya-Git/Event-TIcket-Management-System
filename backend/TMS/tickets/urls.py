@@ -53,9 +53,19 @@ urlpatterns = [
         name='booking_venue',
     ),
     path(
+        'booking/venue-inquiries/<int:pk>/',
+        VenueBookingInquiryCreateView.as_view(),
+        name='booking_venue_detail',
+    ),
+    path(
         'booking/artist-inquiries/',
         ArtistBookingInquiryCreateView.as_view(),
         name='booking_artist',
+    ),
+    path(
+        'booking/artist-inquiries/<int:pk>/',
+        ArtistBookingInquiryCreateView.as_view(),
+        name='booking_artist_detail',
     ),
     path(
         'contact/',
