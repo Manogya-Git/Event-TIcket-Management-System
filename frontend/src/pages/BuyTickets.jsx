@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import TicketGrid from "../components/Buy Tickets/TicketGrid";
 import { useCheckout } from "../context/CheckoutContext";
@@ -6,27 +6,29 @@ import { useCheckout } from "../context/CheckoutContext";
 const BuyTickets = () => {
   const { event } = useOutletContext();
 
-  const { selectedTicketId, setSelectedTicketId, quantity, setQuantity } = useCheckout();
+  const { quantities, setQuantities } = useCheckout();
+
 
   useEffect(() => {
-    setSelectedTicketId(event?.tickets?.[0]?.id ?? null);
+    setQuantities({});
   }, [event]);
 
   const tickets = event?.tickets ?? [];
-  const selectedTicket = useMemo(
-    () => tickets.find((t) => t.id === selectedTicketId) ?? null,
-    [tickets, selectedTicketId],
+  const total = tickets.reduce(
+    (sum, ticket) => sum + Number(ticket.price) * (quantities[ticket.id] ?? 0),
+    0,
   );
-  const total = selectedTicket ? Number(selectedTicket.price) * quantity : 0;
+  const totalCount = tickets.reduce(
+    (sum, tickets) => sum + (quantities[tickets.id] ?? 0),
+    0,
+  );
 
   return (
     <TicketGrid
       tickets={tickets}
-      quantity={quantity}
-      selectedTicketId={selectedTicketId}
-      setSelectedTicketId={setSelectedTicketId}
-      setQuantity={setQuantity}
-      selectedTicket={selectedTicket}
+      quantities={quantities}
+      setQuantities={setQuantities}
+      totalCount={totalCount}
       total={total}
     />
   );

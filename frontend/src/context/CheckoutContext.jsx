@@ -1,4 +1,5 @@
 import { createContext, useContext, useState } from "react";
+import { useAsyncError } from "react-router-dom";
 
 const CheckoutContext = createContext(null);
 
@@ -12,14 +13,13 @@ export const CheckoutProvider = ({ children }) => {
     address: "",
     acceptedTerms: false,
   });
+  const [quantities, setQuantities] = useState({});
 
   const value = {
-    selectedTicketId,
-    setSelectedTicketId,
-    quantity,
-    setQuantity,
     personalDetails,
     setPersonalDetails,
+    quantities,
+    setQuantities,
   };
 
   return (

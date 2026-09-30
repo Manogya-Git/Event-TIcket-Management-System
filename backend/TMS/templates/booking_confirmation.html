@@ -128,7 +128,7 @@
                     color: #ffffff;
                   "
                 >
-                  {{ booking.ticket.event.title }}
+                  {{ event_title }}
                 </p>
 
                 <table
@@ -155,7 +155,7 @@
                         color: rgba(255, 255, 255, 0.9);
                       "
                     >
-                      {{ booking.ticket.event.start_date|date:"D, d M Y" }}
+                      {{ event_date|date:"D, d M Y" }}
                     </td>
                   </tr>
                   <tr>
@@ -178,7 +178,7 @@
                         color: rgba(255, 255, 255, 0.9);
                       "
                     >
-                      {{ booking.ticket.event.venue }}
+                      {{ event_venue }}
                     </td>
                   </tr>
                   <tr>
@@ -190,7 +190,7 @@
                         color: rgba(255, 255, 255, 0.45);
                       "
                     >
-                      Ticket type
+                      Tickets
                     </td>
                     <td
                       align="right"
@@ -201,7 +201,7 @@
                         color: rgba(255, 255, 255, 0.9);
                       "
                     >
-                      {{ booking.ticket.get_ticket_type_display }}
+                      {{ ticket_tiers }}
                     </td>
                   </tr>
                   <tr>
@@ -213,7 +213,7 @@
                         color: rgba(255, 255, 255, 0.45);
                       "
                     >
-                      Quantity
+                      Total tickets
                     </td>
                     <td
                       align="right"
@@ -224,7 +224,7 @@
                         color: rgba(255, 255, 255, 0.9);
                       "
                     >
-                      {{ booking.quantity }}
+                      {{ total_quantity }}
                     </td>
                   </tr>
                   <tr>
@@ -404,7 +404,7 @@
                     color: rgba(255, 255, 255, 0.4);
                   "
                 >
-                  {{ booking.ticket.event.organizer }}
+                  {{ event_organizer }}
                 </p>
               </td>
             </tr>

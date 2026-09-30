@@ -26,6 +26,12 @@ const Payment = () => {
     setLoading(true);
 
     try {
+      console.log(
+        "sending booking:",
+        personalDetails,
+        selectedTicketId,
+        quantity,
+      );
       const response = await axios.post(`${BASE_URL}/bookings/`, {
         ticket: selectedTicketId,
         quantity: quantity,

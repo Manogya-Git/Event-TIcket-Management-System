@@ -62,8 +62,10 @@ const Bookings = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
+  const [eventFilter, setEventFilter] = useState("ALL");
   const [refreshing, setRefreshing] = useState(false);
   const [pendingStatusChange, setPendingStatusChange] = useState(null);
+  const [events, setEvents] = useState([]);
 
   const fetchBookings = async (showRefreshState = false) => {
     if (!accessToken) {
@@ -74,10 +76,14 @@ const Bookings = () => {
     try {
       if (showRefreshState) setRefreshing(true);
       setError("");
-      const url =
-        statusFilter === "ALL"
-          ? `${BASE_URL}/bookings/`
-          : `${BASE_URL}/bookings/?status=${statusFilter}`;
+
+      const params = new URLSearchParams();
+      if (statusFilter !== "ALL") params.append("status", statusFilter);
+      if (eventFilter !== "ALL") params.append("event", eventFilter);
+
+      const queryString = params.toString();
+      const url = `${BASE_URL}/bookings/${queryString ? `?${queryString}` : ""}`;
+
       const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
@@ -96,12 +102,34 @@ const Bookings = () => {
   };
 
   useEffect(() => {
+    const fetchEvents = async () => {
+      if (!accessToken) return;
+      try {
+        const response = await axios.get(`${BASE_URL}/events/`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        setEvents(
+          Array.isArray(response.data)
+            ? response.data
+            : response.data.results || [],
+        );
+      } catch (error) {
+        console.error("Failed to fetch events:", error);
+      }
+    };
+
+    fetchEvents();
+  }, [accessToken]);
+
+  useEffect(() => {
     fetchBookings();
 
     const handleWindowFocus = () => fetchBookings(true);
     window.addEventListener("focus", handleWindowFocus);
     return () => window.removeEventListener("focus", handleWindowFocus);
-  }, [accessToken, statusFilter]);
+  }, [accessToken, statusFilter, eventFilter]);
 
   const formatDate = (value) => {
     if (!value) return "-";
@@ -215,110 +243,151 @@ const Bookings = () => {
           {refreshing ? "Refreshing..." : "Refresh"}
         </Button>
       </div>
-      <ToggleButtonGroup
-        value={statusFilter}
-        exclusive
-        onChange={(_event, newStatus) => {
-          if (newStatus !== null) {
-            setStatusFilter(newStatus);
-            setPage(0);
-          }
-        }}
-        aria-label="booking status filter"
-        size="small"
-        sx={{
-          mb: 3,
-          p: 0.5,
-          gap: 0.5,
-          display: "flex",
-          flexWrap: "wrap",
-          border: "1px solid #e2e8f0",
-          borderRadius: 2.5,
-          backgroundColor: "#ffffff",
-          boxShadow: "0 4px 12px rgba(15, 23, 42, 0.06)",
-          "& .MuiToggleButtonGroup-grouped": {
-            m: 0,
-            border: 0,
-            borderRadius: 1.75,
-            color: "#64748b",
-            fontWeight: 700,
-            textTransform: "none",
-            letterSpacing: "0.01em",
-            px: { xs: 1.5, sm: 2 },
-            py: 0.9,
-            display: "flex",
-            alignItems: "center",
-            transition: "all 160ms ease",
-            "&:hover": {
-              backgroundColor: "#f1f5f9",
-              color: "#0f172a",
-            },
-            "&.Mui-selected": {
-              backgroundColor: "#0f172a",
-              color: "#ffffff",
-              boxShadow: "0 3px 8px rgba(15, 23, 42, 0.2)",
-              "&:hover": { backgroundColor: "#1e293b" },
-            },
-            "&:focus-visible": {
-              outline: "3px solid rgba(59, 130, 246, 0.35)",
-              outlineOffset: 2,
-            },
-          },
-        }}
+      <div
+        style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 24 }}
       >
-        <ToggleButton value="ALL" aria-label="all bookings">
-          <span
-            style={{
-              width: 8,
-              height: 8,
-              borderRadius: "50%",
-              backgroundColor: "#94a3b8",
-              marginRight: 6,
-              display: "inline-block",
+        <ToggleButtonGroup
+          value={statusFilter}
+          exclusive
+          onChange={(_event, newStatus) => {
+            if (newStatus !== null) {
+              setStatusFilter(newStatus);
+              setPage(0);
+            }
+          }}
+          aria-label="booking status filter"
+          size="small"
+          sx={{
+            p: 0.5,
+            gap: 0.5,
+            display: "flex",
+            flexWrap: "wrap",
+            border: "1px solid #e2e8f0",
+            borderRadius: 2.5,
+            backgroundColor: "#ffffff",
+            boxShadow: "0 4px 12px rgba(15, 23, 42, 0.06)",
+            "& .MuiToggleButtonGroup-grouped": {
+              m: 0,
+              border: 0,
+              borderRadius: 1.75,
+              color: "#64748b",
+              fontWeight: 700,
+              textTransform: "none",
+              letterSpacing: "0.01em",
+              px: { xs: 1.5, sm: 2 },
+              py: 0.9,
+              display: "flex",
+              alignItems: "center",
+              transition: "all 160ms ease",
+              "&:hover": {
+                backgroundColor: "#f1f5f9",
+                color: "#0f172a",
+              },
+              "&.Mui-selected": {
+                backgroundColor: "#0f172a",
+                color: "#ffffff",
+                boxShadow: "0 3px 8px rgba(15, 23, 42, 0.2)",
+                "&:hover": { backgroundColor: "#1e293b" },
+              },
+              "&:focus-visible": {
+                outline: "3px solid rgba(59, 130, 246, 0.35)",
+                outlineOffset: 2,
+              },
+            },
+          }}
+        >
+          <ToggleButton value="ALL" aria-label="all bookings">
+            <span
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: "50%",
+                backgroundColor: "#94a3b8",
+                marginRight: 6,
+                display: "inline-block",
+              }}
+            />
+            All
+          </ToggleButton>
+          <ToggleButton value="PENDING" aria-label="pending bookings">
+            <span
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: "50%",
+                backgroundColor: "#f59e0b",
+                marginRight: 6,
+                display: "inline-block",
+              }}
+            />
+            Pending
+          </ToggleButton>
+          <ToggleButton value="CONFIRMED" aria-label="confirmed bookings">
+            <span
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: "50%",
+                backgroundColor: "#16a34a",
+                marginRight: 6,
+                display: "inline-block",
+              }}
+            />
+            Confirmed
+          </ToggleButton>
+          <ToggleButton value="CANCELLED" aria-label="cancelled bookings">
+            <span
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: "50%",
+                backgroundColor: "#dc2626",
+                marginRight: 6,
+                display: "inline-block",
+              }}
+            />
+            Cancelled
+          </ToggleButton>
+        </ToggleButtonGroup>
+
+        <FormControl size="small" sx={{ minWidth: 220 }}>
+          <Select
+            value={eventFilter}
+            onChange={(event) => {
+              setEventFilter(event.target.value);
+              setPage(0);
             }}
-          />
-          All
-        </ToggleButton>
-        <ToggleButton value="PENDING" aria-label="pending bookings">
-          <span
-            style={{
-              width: 8,
-              height: 8,
-              borderRadius: "50%",
-              backgroundColor: "#f59e0b",
-              marginRight: 6,
-              display: "inline-block",
+            displayEmpty
+            sx={{
+              backgroundColor: "#ffffff",
+              borderRadius: 2,
+              border: "1px solid #e2e8f0",
+              fontWeight: 600,
+              color: "#0f172a",
+              ".MuiOutlinedInput-notchedOutline": { border: "none" },
             }}
-          />
-          Pending
-        </ToggleButton>
-        <ToggleButton value="CONFIRMED" aria-label="confirmed bookings">
-          <span
-            style={{
-              width: 8,
-              height: 8,
-              borderRadius: "50%",
-              backgroundColor: "#16a34a",
-              marginRight: 6,
-              display: "inline-block",
-            }}
-          />
-          Confirmed
-        </ToggleButton>
-        <ToggleButton value="CANCELLED" aria-label="cancelled bookings">
-          <span
-            style={{
-              width: 8,
-              height: 8,
-              borderRadius: "50%",
-              backgroundColor: "#dc2626",
-              marginRight: 6,
-              display: "inline-block",
-            }}
-          />
-          Cancelled
-        </ToggleButton>
-      </ToggleButtonGroup>
+          >
+            <MenuItem value="ALL">All Events</MenuItem>
+            {events && events.length > 0 ? (
+              events.map((event) => (
+                <MenuItem
+                  key={event.id ?? event.slug ?? event.name}
+                  value={String(event.id ?? event.slug ?? event.name)}
+                >
+                  {event.name ||
+                    event.title ||
+                    event.event_name ||
+                    `Event ${event.id}`}
+                </MenuItem>
+              ))
+            ) : (
+              <MenuItem value="ALL" disabled>
+                No events available
+              </MenuItem>
+            )}
+          </Select>
+        </FormControl>
+      </div>
 
       <Paper
         sx={{

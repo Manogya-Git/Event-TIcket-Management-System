@@ -3,6 +3,7 @@ from django.db import transaction
 from rest_framework import serializers
 from .models import (
     Artist,
+    BookingItem,
     Ticket,
     Event,
     Category,
@@ -11,6 +12,7 @@ from .models import (
     VenueBookingInquiry,
     ArtistBookingInquiry,
     ContactMessage,
+    
 )
 
 class TicketSerializer(serializers.ModelSerializer):
@@ -48,34 +50,43 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = "__all__"
 
-class BookingSerializer(serializers.ModelSerializer):
-    event = serializers.CharField(source="ticket.event.title", read_only=True)
-    ticket_tier = serializers.CharField(source="ticket.ticket_type", read_only=True)
+class BookingItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BookingItem
+        fields = ["ticket","quantity"]
 
+class BookingSerializer(serializers.ModelSerializer):
+    items = BookingItemSerializer(many=True)
     class Meta:
         model = Booking
-        fields = ["id", "ticket", "quantity", "status", "created",
-            "full_name", "email", "phone_number", "address", "payment_method",
-            "event", "ticket_tier"]
-        read_only_fields = ["status", "created"]
+        fields = ["id", "status", "created", "items",
+            "full_name", "email", "phone_number", "address", "payment_method"]
+        read_only_fields = ["created"]
 
 
     def create(self, validated_data):
-        ticket_id = validated_data['ticket'].id
-        quantity = validated_data['quantity']
-
+        items = validated_data.pop("items")
         with transaction.atomic():
-            ticket = Ticket.objects.select_for_update().get(pk=ticket_id)
-            remaining = ticket.quantity - ticket.sold_quantity
-
-            if quantity > remaining:
-                raise serializers.ValidationError(
-                    "Not enough tickets available for this booking "
-                )
-
+            for item in items:
+                ticket = Ticket.objects.select_for_update().get(pk=item['ticket'].id)
+                quantity = item['quantity']
+                remaining = ticket.quantity - ticket.sold_quantity
+                if quantity > remaining:
+                    raise serializers.ValidationError(
+                        "Not enough tickets available for this booking "
+                    )
             booking = Booking.objects.create(**validated_data)
 
-        return booking
+            for item in items:
+                ticket = Ticket.objects.select_for_update().get(pk=item['ticket'].id)
+                quantity = item['quantity']
+                BookingItem.objects.create(booking=booking, ticket=ticket,quantity=quantity,unit_price=ticket.price)
+                ticket.sold_quantity += quantity
+                ticket.save()
+            return booking
+       
+
+
 
 class EsewaPaymentInitSerializer(serializers.Serializer):
     booking_id = serializers.IntegerField()

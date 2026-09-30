@@ -33,6 +33,7 @@ from .serializer import (
     VenueBookingInquirySerializer,
     ArtistBookingInquirySerializer,
     ContactMessageSerializer,
+    
  
 )
 from .utils import (
@@ -78,8 +79,11 @@ class BookingViewSet(viewsets.ModelViewSet):
             "-created", "-id"
         )
         status = self.request.query_params.get('status')
+        event = self.request.query_params.get('event')
         if status:
             queryset = queryset.filter(status=status)
+        if event:
+            queryset = queryset.filter(ticket__event=event)
         return queryset
 
     serializer_class = BookingSerializer

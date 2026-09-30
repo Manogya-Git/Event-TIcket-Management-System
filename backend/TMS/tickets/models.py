@@ -89,8 +89,8 @@ class Booking(models.Model):
         ("ESEWA","Esewa"),
          ("KHALTI","Khalti"),
     ]
-    ticket = models.ForeignKey(Ticket,on_delete=models.CASCADE,related_name='bookings')
-    quantity = models.PositiveIntegerField(default=1)
+    ticket = models.ForeignKey(Ticket,on_delete=models.CASCADE,related_name='bookings',null=True, blank=True)
+    quantity = models.PositiveIntegerField(default=1,null=True, blank=True)
     status = models.CharField(max_length=20,choices=STATUS_CHOICE, default='PENDING')
     created = models.DateTimeField(auto_now_add=True)
     full_name = models.CharField(max_length=100)
@@ -103,10 +103,24 @@ class Booking(models.Model):
 
 
     def total_price(self):
-        return self.ticket.price * self.quantity
+        return sum(item.unit_price * item.quantity for item in self.items.all())
 
     def __str__(self):
         return f"- {self.ticket} - {self.quantity}"
+
+class BookingItem(models.Model):
+    booking = models.ForeignKey(Booking,on_delete=models.CASCADE,related_name="items")
+    ticket = models.ForeignKey(Ticket,on_delete=models.PROTECT)
+    quantity = models.PositiveIntegerField(default=1)
+    unit_price = models.IntegerField()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["booking","ticket"],
+                name="unique_ticket_per_booking",
+            )
+        ]
 
 
 class Venue(models.Model):
@@ -189,6 +203,9 @@ class ContactMessage(models.Model):
 
     def __str__(self):
         return f"{self.full_name} - {self.subject}"
+
+
+
 
 
 

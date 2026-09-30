@@ -41,8 +41,27 @@ def verify_esewa_signature(decoded_json):
 
 
 def send_booking_confirmation_email(booking):
-    html_content = render_to_string("booking_confirmation.html", {"booking": booking})
-    text_content = f"Your ticket for {booking.ticket.event.title} is confirmed"
+    first_item = booking.items.first()
+    event = first_item.ticket.event
+
+    ticket_tiers = ", ".join(
+        f"{item.ticket.get_ticket_type_display()} x {item.quantity}"
+        for item in booking.items.all()
+    )
+
+    total_quantity = sum(item.quantity for item in booking.items.all())
+    context = {
+        "booking": booking,
+        "event_title": event.title,
+        "event_date": event.start_date,
+        "event_venue": event.venue,
+        "event_organizer": event.organizer,
+        "ticket_tiers": ticket_tiers,
+        "total_quantity": total_quantity,
+    }
+    subject = f"Your ticket for {event.title} is confirmed"
+    html_content = render_to_string("booking_confirmation.html", context)
+    text_content = subject
     subject =  f"Your ticket for {booking.ticket.event.title} is confirmed"
     email = EmailMultiAlternatives(
         subject=subject,
@@ -57,15 +76,25 @@ def send_booking_confirmation_email(booking):
     
 
 def build_qr_payload(booking):
+    first_item = booking.items.first()
+    event_title = first_item.ticket.event.title
+    event_venue = first_item.ticket.event.venue
+    event_date = first_item.ticket.event.start_date.strftime('%a, %d %b %Y')
+
+    ticket_lines = []
+    for item in booking.items.all():
+        name = item.ticket.get_ticket_type_display()
+        ticket_lines.append(f"{name} x {item.quantity}")
+
+
     lines = [
         
         f"Booking: {booking.id}",
         f"Name: {booking.full_name}",
-        f"Event: {booking.ticket.event.title}",
-        f"Ticket: {booking.ticket.get_ticket_type_display()}",
-        f"Qty: {booking.quantity}",
-        f"Date: {booking.ticket.event.start_date.strftime('%a, %d %b %Y')}",
-        f"Venue: {booking.ticket.event.venue}"
+        f"Event: {event_title}",
+        f"Ticket: {', '.join(ticket_lines)}",
+        f"Date: {event_date}",
+        f"Venue: {event_venue}"
         
     ]
     return "\n".join(lines)
