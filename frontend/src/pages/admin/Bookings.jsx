@@ -469,6 +469,18 @@ const Bookings = () => {
                         const value =
                           column.id === "created"
                             ? formatDate(row.created)
+                            : column.id === "ticket_tier"
+                            ? row.items
+                                .map(
+                                  (item) =>
+                                    `${item.ticket_type} x ${item.quantity}`,
+                                )
+                                .join(", ")
+                            : column.id === "quantity"
+                            ? row.items.reduce(
+                                (total, item) => total + item.quantity,
+                                0,
+                              )
                             : row[column.id];
 
                         return (
@@ -526,12 +538,20 @@ const Bookings = () => {
                                 size="small"
                                 sx={{
                                   fontWeight: 700,
-                                  ...((column.id === "ticket_tier"
-                                    ? ticketTierColors[value]
-                                    : paymentMethodColors[value]) || {
-                                    backgroundColor: "#f1f5f9",
-                                    color: "#475569",
-                                  }),
+                                  ...(column.id === "ticket_tier"
+                                    ? value && String(value).includes(",")
+                                      ? {
+                                          backgroundColor: "#f1f5f9",
+                                          color: "#475569",
+                                        }
+                                      : ticketTierColors[value] || {
+                                          backgroundColor: "#f1f5f9",
+                                          color: "#475569",
+                                        }
+                                    : paymentMethodColors[value] || {
+                                        backgroundColor: "#f1f5f9",
+                                        color: "#475569",
+                                      }),
                                 }}
                               />
                             ) : (

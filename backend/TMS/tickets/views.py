@@ -170,7 +170,10 @@ class VerifyEsewaPaymentView(APIView):
         decoded_json = json.loads(decoded_bytes)
         is_valid = verify_esewa_signature(decoded_json)
         if not is_valid:
+
             return Response({"error":"Invalid Signature"},status = 400)
+        if decoded_json["status"] != "COMPLETE":
+            return Response({"error":"Payment not completed"},status=400)
         transaction_uuid = decoded_json["transaction_uuid"]
         booking = get_object_or_404(
             Booking,
@@ -201,9 +204,10 @@ class InitiateKhaltiPaymentView(APIView):
         if booking.status != "PENDING":
             return Response({"error":"this booking id is not available"},status=400)
 
+        first_item = booking.items.first()
         purchase_order_id = f"{booking.id}-{uuid.uuid4().hex}"
         amount = booking.total_price() * 100
-        purchase_order_name = f"{booking.ticket.event.title} -{booking.ticket.ticket_type} "
+        purchase_order_name = f"{first_item.ticket.event.title} -{first_item.ticket.ticket_type} "
         customer_info = {
             "name":booking.full_name,
             "email":booking.email,

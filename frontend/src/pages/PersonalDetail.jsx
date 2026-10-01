@@ -24,6 +24,19 @@ const PersonalDetails = () => {
       <div className="grid gap-5">
         <div className="group">
           <label className="text-sm font-medium text-neutral-300">
+            Full Name<span className="text-lime-400">*</span>
+          </label>
+          <input
+            type="text"
+            placeholder="Your Full Name"
+            value={personalDetails.fullName}
+            onChange={handleChange("fullName")}
+            className="mt-2 w-full rounded-xl border border-neutral-800 bg-neutral-950/80 px-4 py-3.5 text-sm text-white placeholder-neutral-600 shadow-inner shadow-black/20 transition duration-200 hover:border-neutral-700 focus:border-lime-400 focus:ring-4 focus:ring-lime-400/10"
+          />
+        </div>
+
+        <div className="group">
+          <label className="text-sm font-medium text-neutral-300">
             Phone Number<span className="text-lime-400">*</span>
           </label>
           <input
@@ -44,19 +57,6 @@ const PersonalDetails = () => {
             placeholder="Your Email Address"
             value={personalDetails.email}
             onChange={handleChange("email")}
-            className="mt-2 w-full rounded-xl border border-neutral-800 bg-neutral-950/80 px-4 py-3.5 text-sm text-white placeholder-neutral-600 shadow-inner shadow-black/20 transition duration-200 hover:border-neutral-700 focus:border-lime-400 focus:ring-4 focus:ring-lime-400/10"
-          />
-        </div>
-
-        <div className="group">
-          <label className="text-sm font-medium text-neutral-300">
-            Full Name<span className="text-lime-400">*</span>
-          </label>
-          <input
-            type="text"
-            placeholder="Your Full Name"
-            value={personalDetails.fullName}
-            onChange={handleChange("fullName")}
             className="mt-2 w-full rounded-xl border border-neutral-800 bg-neutral-950/80 px-4 py-3.5 text-sm text-white placeholder-neutral-600 shadow-inner shadow-black/20 transition duration-200 hover:border-neutral-700 focus:border-lime-400 focus:ring-4 focus:ring-lime-400/10"
           />
         </div>

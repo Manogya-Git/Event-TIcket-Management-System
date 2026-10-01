@@ -15,7 +15,7 @@ const PAYMENT_METHODS = [
 const Payment = () => {
   const { event } = useOutletContext();
   const navigate = useNavigate();
-  const { selectedTicketId, quantity, personalDetails } = useCheckout();
+  const {  quantities, personalDetails } = useCheckout();
   const [selectedMethod, setSelectedMethod] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -29,12 +29,15 @@ const Payment = () => {
       console.log(
         "sending booking:",
         personalDetails,
-        selectedTicketId,
-        quantity,
       );
+      const itemsPayload = Object.entries(quantities).map(([ticketId, qty]) => {
+        return {
+          ticket: Number(ticketId),
+          quantity: qty,
+        };
+      });
       const response = await axios.post(`${BASE_URL}/bookings/`, {
-        ticket: selectedTicketId,
-        quantity: quantity,
+        items: itemsPayload,
         full_name: personalDetails.fullName,
         email: personalDetails.email,
         phone_number: personalDetails.phone,

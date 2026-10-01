@@ -62,7 +62,6 @@ def send_booking_confirmation_email(booking):
     subject = f"Your ticket for {event.title} is confirmed"
     html_content = render_to_string("booking_confirmation.html", context)
     text_content = subject
-    subject =  f"Your ticket for {booking.ticket.event.title} is confirmed"
     email = EmailMultiAlternatives(
         subject=subject,
         body=text_content,

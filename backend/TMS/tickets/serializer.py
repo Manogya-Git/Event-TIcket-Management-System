@@ -51,17 +51,29 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 class BookingItemSerializer(serializers.ModelSerializer):
+    ticket_type = serializers.SerializerMethodField()
+
+    def get_ticket_type(self,obj):
+        return obj.ticket.get_ticket_type_display()
     class Meta:
         model = BookingItem
-        fields = ["ticket","quantity"]
+        fields = ["ticket","quantity","ticket_type"]
 
 class BookingSerializer(serializers.ModelSerializer):
     items = BookingItemSerializer(many=True)
+    event = serializers.SerializerMethodField()
     class Meta:
         model = Booking
-        fields = ["id", "status", "created", "items",
+        fields = ["id", "status", "created", "items","event",
             "full_name", "email", "phone_number", "address", "payment_method"]
         read_only_fields = ["created"]
+
+    def get_event(self,obj):
+        event = obj.items.all()
+        if obj.items.exists():
+            return obj.items.first().ticket.event.title
+        else:
+            return "-"
 
 
     def create(self, validated_data):
