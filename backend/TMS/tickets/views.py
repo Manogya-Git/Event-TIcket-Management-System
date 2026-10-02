@@ -1,4 +1,5 @@
 import base64
+from datetime import date, timezone
 import json
 
 import requests
@@ -11,6 +12,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import (
     Artist,
+    PromoCode,
     Ticket,
     Event,
     Category,
@@ -22,6 +24,7 @@ from .models import (
 )
 from .serializer import (
     ArtistSerializer,
+    PromoCodeSerializer,
     TicketSerializer,
     EventSerializer,
     CategorySerializer,
@@ -347,6 +350,71 @@ class ArtistViewSet(viewsets.ModelViewSet):
     serializer_class = ArtistSerializer
     permission_classes = [IsStaffOrReadOnly]
     lookup_field = 'slug'
+
+class PromoCodeAPIView(APIView):
+    def post(self, request):
+        code = request.data.get("code")
+        if not code:
+            return Response({"error": "Promo code is required"}, status=400)
+
+        code = code.upper()
+        promo_code = get_object_or_404(PromoCode, code=code)
+        active = promo_code.active
+
+        if not active:
+            return Response({"error": "Invalid promo code"}, status=400)
+
+        now = timezone.now()
+        if now < promo_code.valid_from:
+            return Response({"error": "not yet active"}, status=400)
+        if now > promo_code.valid_to:
+            return Response({"error": "expired"}, status=400)
+
+        event_id = request.data.get("event_id")
+        get_object_or_404(Event, id=event_id)
+
+        if promo_code.applicable_events.exists():
+            if not promo_code.applicable_events.filter(id=event_id).exists():
+                return Response({"error": "there is no promo code available for this event"}, status=400)
+
+        items = request.data.get("items")
+        subtotal = 0
+        for item in items:
+            ticket_id = item["ticket"]
+            quantity = item["quantity"]
+            ticket = get_object_or_404(Ticket, id=ticket_id)
+            subtotal += ticket.price * quantity
+
+        discount_amount = (subtotal * promo_code.discount) / 100
+        new_total = subtotal - discount_amount
+
+        return Response({
+            "valid": True,
+            "discount_amount": discount_amount,
+            "new_total": new_total,
+            "message": f"{promo_code.discount}% discount applied!"
+        }, status=200)
+
+
+
+
+            
+
+            
+
+
+
+
+        
+        
+
+        
+
+ 
+ 
+
+
+
         
 
 

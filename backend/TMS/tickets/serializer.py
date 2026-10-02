@@ -4,6 +4,7 @@ from rest_framework import serializers
 from .models import (
     Artist,
     BookingItem,
+    PromoCode,
     Ticket,
     Event,
     Category,
@@ -168,5 +169,15 @@ class ContactMessageSerializer(serializers.ModelSerializer):
         model = ContactMessage
         fields = ["id", "full_name", "email", "contact_number", "subject", "details", "created_at"]
         read_only_fields = ["id", "created_at"]
+
+
+class PromoCodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PromoCode
+        fields = ["code","active","discount","valid_from",
+        "valid_to",
+        "applicable_events",
+        ]
+
 
 

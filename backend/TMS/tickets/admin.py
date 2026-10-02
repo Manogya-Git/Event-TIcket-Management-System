@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import (
+    PromoCode,
     Ticket,
     Category,
     Event,
@@ -29,3 +30,10 @@ class ContactMessageAdmin(admin.ModelAdmin):
     list_filter = ("subject", "created_at")
     search_fields = ("full_name", "email", "contact_number", "details")
     readonly_fields = ("created_at",)
+
+@admin.register(PromoCode)
+class PromoCode(admin.ModelAdmin):
+    list_display =  ['code', 'valid_from', 'valid_to','discount', 'active',]
+    list_filter = ['active', 'valid_from', 'valid_to']
+    search_fields = ['code']
+

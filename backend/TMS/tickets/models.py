@@ -1,8 +1,12 @@
 from django.db import models
 from django.conf import settings
 from django.utils.text import slugify
+from django.core.validators import MinValueValidator,MaxValueValidator
 
 # Create your models here.
+
+
+
 class Category(models.Model):
     name = models.CharField(max_length=20)
 
@@ -79,6 +83,18 @@ class Ticket(models.Model):
     def __str__(self):
         return f"{self.event.title} - {self.ticket_type}"
 
+class PromoCode(models.Model):
+    code = models.CharField(max_length=50,unique=True)
+    valid_from = models.DateTimeField()
+    valid_to = models.DateTimeField()
+    discount = models.IntegerField(validators=[MinValueValidator(0)],help_text='Percentage value (0 to 100)')
+    active = models.BooleanField()
+    applicable_events = models.ManyToManyField(Event,blank=True)
+
+    def __str__(self):
+        return self.code
+
+
 class Booking(models.Model):
     STATUS_CHOICE = [
         ("PENDING", "Pending"),
@@ -100,10 +116,15 @@ class Booking(models.Model):
     transaction_uuid = models.CharField(max_length=100,blank=True,null=True)
     payment_method = models.CharField(max_length=20,choices=PAYMENT_CHOICE)
     khalti_pidx = models.CharField(max_length = 100,blank=True,null=True)
+    promocode = models.ForeignKey(PromoCode,on_delete=models.PROTECT,null=True)
+    discount_amount = models.IntegerField(null=True)
+    
 
 
     def total_price(self):
-        return sum(item.unit_price * item.quantity for item in self.items.all())
+        subtotal = sum(item.unit_price * item.quantity for item in self.items.all())
+        discount = self.discount_amount or 0 
+        return subtotal - 0
 
     def __str__(self):
         return f"- {self.ticket} - {self.quantity}"
@@ -113,6 +134,7 @@ class BookingItem(models.Model):
     ticket = models.ForeignKey(Ticket,on_delete=models.PROTECT)
     quantity = models.PositiveIntegerField(default=1)
     unit_price = models.IntegerField()
+    
 
     class Meta:
         constraints = [
@@ -203,6 +225,10 @@ class ContactMessage(models.Model):
 
     def __str__(self):
         return f"{self.full_name} - {self.subject}"
+
+
+
+    
 
 
 
