@@ -6,8 +6,7 @@ import { useCheckout } from "../context/CheckoutContext";
 const BuyTickets = () => {
   const { event } = useOutletContext();
 
-  const { quantities, setQuantities } = useCheckout();
-
+  const { quantities, setQuantities, discountInfo } = useCheckout();
 
   useEffect(() => {
     setQuantities({});
@@ -22,14 +21,19 @@ const BuyTickets = () => {
     (sum, tickets) => sum + (quantities[tickets.id] ?? 0),
     0,
   );
+  const displayedTotal = discountInfo
+    ? Math.max(0, total - discountInfo.discount_amount)
+    : total;
 
   return (
     <TicketGrid
+      event={event}
       tickets={tickets}
       quantities={quantities}
       setQuantities={setQuantities}
       totalCount={totalCount}
       total={total}
+      displayedTotal={displayedTotal}
     />
   );
 };

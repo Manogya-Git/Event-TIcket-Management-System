@@ -12,10 +12,10 @@ const PAYMENT_METHODS = [
   { id: "khalti", label: "Khalti", logo: khaltiLogo },
 ];
 
-const Payment = () => {
+const Payment = () => { 
   const { event } = useOutletContext();
   const navigate = useNavigate();
-  const {  quantities, personalDetails } = useCheckout();
+  const {  quantities, personalDetails, promoCode } = useCheckout();
   const [selectedMethod, setSelectedMethod] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -43,6 +43,7 @@ const Payment = () => {
         phone_number: personalDetails.phone,
         address: personalDetails.address,
         payment_method: selectedMethod.toUpperCase(),
+        promo_code: promoCode || null,
       });
 
       const booking = response.data;

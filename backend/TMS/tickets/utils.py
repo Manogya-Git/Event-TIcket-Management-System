@@ -1,3 +1,4 @@
+from django.utils import timezone
 import hmac
 import hashlib
 import base64
@@ -5,10 +6,12 @@ import requests
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.db import transaction
+from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
-from .models import Booking, Ticket
+from .models import Booking, Event, Ticket
 import io
 import qrcode
+from rest_framework.exceptions import ValidationError
 
 
 def generate_esewa_signature(total_amount, transaction_uuid, product_code):
@@ -105,4 +108,26 @@ def generate_qr_png(booking):
     buffer = io.BytesIO()
     img.save(buffer,format='PNG')
     return buffer.getvalue()
+
+
+def validate_promocode(promo_code, event_id):
+    if not promo_code.active:
+        raise ValidationError("Invalid promo code")
+
+    now = timezone.now()
+    if now < promo_code.valid_from:
+        raise ValidationError("Promo code is not yet active")
+    if now > promo_code.valid_to:
+        raise ValidationError("Promo code has expired")
+
+    event = get_object_or_404(Event, id=event_id)
+
+    if promo_code.applicable_events.exists():
+        if not promo_code.applicable_events.filter(id=event_id).exists():
+            raise ValidationError("There is no promo code available for this event")
+
+    return promo_code
+    
+
+
 

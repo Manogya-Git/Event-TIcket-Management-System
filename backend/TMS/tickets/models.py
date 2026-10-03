@@ -124,7 +124,7 @@ class Booking(models.Model):
     def total_price(self):
         subtotal = sum(item.unit_price * item.quantity for item in self.items.all())
         discount = self.discount_amount or 0 
-        return subtotal - 0
+        return subtotal - discount
 
     def __str__(self):
         return f"- {self.ticket} - {self.quantity}"

@@ -10,12 +10,18 @@ export const CheckoutProvider = ({ children }) => {
     acceptedTerms: false,
   });
   const [quantities, setQuantities] = useState({});
+  const [promoCode, setPromoCode] = useState("");
+  const [discountInfo, setDiscountInfo] = useState(null);
 
   const value = {
     personalDetails,
     setPersonalDetails,
     quantities,
     setQuantities,
+    promoCode,
+    setPromoCode,
+    discountInfo,
+    setDiscountInfo,
   };
 
   return (

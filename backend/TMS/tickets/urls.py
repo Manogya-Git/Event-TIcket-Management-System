@@ -15,6 +15,7 @@ from .views import (
     VenueViewSet,
     VerifyEsewaPaymentView,
     VerifyKhaltiPaymentView,
+    PromoCodeAPIView,
 )
 from .admin_views import admin_dashboard_events, admin_dashboard_stats
 
@@ -25,6 +26,7 @@ router.register('category', CategoryViewSet, basename='category')
 router.register('artists', ArtistViewSet, basename='artist')
 router.register('venues', VenueViewSet, basename='venue')
 router.register('bookings', BookingViewSet, basename='booking')
+
 
 urlpatterns = [
     path(
@@ -80,6 +82,7 @@ urlpatterns = [
         'api/admin/events/',
         admin_dashboard_events, name='event_page',
     ),
+    path('promocode/', PromoCodeAPIView.as_view(), name='promo'),
 
     
 ] + router.urls

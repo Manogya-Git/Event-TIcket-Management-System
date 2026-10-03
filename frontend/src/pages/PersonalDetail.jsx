@@ -5,6 +5,9 @@ import { useCheckout } from "../context/CheckoutContext";
 const PersonalDetails = () => {
   const { personalDetails, setPersonalDetails } = useCheckout();
   const navigate = useNavigate();
+  const [promoInput, setPromoInput] = useState("");
+  const [promoError, setPromoError] = useState("");
+  const [promoLoading, setPromoLoading] = useState(false);
 
   const handleChange = (field) => (e) => {
     setPersonalDetails((prev) => ({ ...prev, [field]: e.target.value }));

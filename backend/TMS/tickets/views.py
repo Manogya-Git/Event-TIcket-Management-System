@@ -2,6 +2,7 @@ import base64
 from datetime import date, timezone
 import json
 
+from rest_framework.exceptions import ValidationError
 import requests
 
 from rest_framework.decorators import action
@@ -43,6 +44,7 @@ from .utils import (
 
     generate_esewa_signature,
     send_booking_confirmation_email,
+    validate_promocode,
     verify_esewa_signature,
 )
 import uuid
@@ -360,22 +362,12 @@ class PromoCodeAPIView(APIView):
         code = code.upper()
         promo_code = get_object_or_404(PromoCode, code=code)
         active = promo_code.active
-
-        if not active:
-            return Response({"error": "Invalid promo code"}, status=400)
-
-        now = timezone.now()
-        if now < promo_code.valid_from:
-            return Response({"error": "not yet active"}, status=400)
-        if now > promo_code.valid_to:
-            return Response({"error": "expired"}, status=400)
-
         event_id = request.data.get("event_id")
-        get_object_or_404(Event, id=event_id)
 
-        if promo_code.applicable_events.exists():
-            if not promo_code.applicable_events.filter(id=event_id).exists():
-                return Response({"error": "there is no promo code available for this event"}, status=400)
+        try:
+            validate_promocode(promo_code=promo_code,event_id=event_id)
+        except ValidationError as e :
+            return Response({"error": str(e)}, status=400)
 
         items = request.data.get("items")
         subtotal = 0

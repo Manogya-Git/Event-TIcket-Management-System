@@ -1,6 +1,8 @@
 from django.db import transaction
-
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
+from .utils import validate_promocode
 from .models import (
     Artist,
     BookingItem,
@@ -63,41 +65,78 @@ class BookingItemSerializer(serializers.ModelSerializer):
 class BookingSerializer(serializers.ModelSerializer):
     items = BookingItemSerializer(many=True)
     event = serializers.SerializerMethodField()
+    
+    # ✅ Write-only field to accept promo code string from frontend
+    promo_code = serializers.CharField(
+        write_only=True,
+        required=False,
+        allow_null=True,
+        allow_blank=True
+    )
+    
     class Meta:
         model = Booking
-        fields = ["id", "status", "created", "items","event",
-            "full_name", "email", "phone_number", "address", "payment_method"]
+        fields = ["id", "status", "created", "items", "event",
+            "full_name", "email", "phone_number", "address", "payment_method","promo_code"]
         read_only_fields = ["created"]
 
-    def get_event(self,obj):
-        event = obj.items.all()
+    def get_event(self, obj):
         if obj.items.exists():
             return obj.items.first().ticket.event.title
-        else:
-            return "-"
-
+        return "-"
 
     def create(self, validated_data):
         items = validated_data.pop("items")
+        promo_code = validated_data.pop("promo_code", None)
+        
+        promocode_obj = None
+        discount_amount = None
+        
+        if promo_code:
+            promocode_obj = get_object_or_404(PromoCode, code=promo_code.upper())
+            event_id = items[0]['ticket'].event.id
+
+            try:
+                validate_promocode(promo_code=promocode_obj, event_id=event_id)
+            except ValidationError as e:
+                raise serializers.ValidationError(str(e))
+
+            subtotal = 0
+            for item in items:
+                ticket = item['ticket']
+                quantity = item['quantity']
+                subtotal += ticket.price * quantity
+
+            discount_amount = (subtotal * promocode_obj.discount) / 100
+
         with transaction.atomic():
             for item in items:
                 ticket = Ticket.objects.select_for_update().get(pk=item['ticket'].id)
                 quantity = item['quantity']
                 remaining = ticket.quantity - ticket.sold_quantity
                 if quantity > remaining:
-                    raise serializers.ValidationError(
-                        "Not enough tickets available for this booking "
-                    )
-            booking = Booking.objects.create(**validated_data)
+                    raise serializers.ValidationError("Not enough tickets available")
+            
+            # ✅ FIX: Use "promocode" (no underscore) - matches model field
+            booking = Booking.objects.create(
+                **validated_data,
+                promocode=promocode_obj,
+                discount_amount=discount_amount
+            )
 
             for item in items:
                 ticket = Ticket.objects.select_for_update().get(pk=item['ticket'].id)
                 quantity = item['quantity']
-                BookingItem.objects.create(booking=booking, ticket=ticket,quantity=quantity,unit_price=ticket.price)
+                BookingItem.objects.create(
+                    booking=booking,
+                    ticket=ticket,
+                    quantity=quantity,
+                    unit_price=ticket.price
+                )
                 ticket.sold_quantity += quantity
                 ticket.save()
+            
             return booking
-       
 
 
 
