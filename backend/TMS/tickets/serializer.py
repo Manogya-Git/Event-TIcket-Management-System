@@ -117,7 +117,7 @@ class BookingSerializer(serializers.ModelSerializer):
                 if quantity > remaining:
                     raise serializers.ValidationError("Not enough tickets available")
             
-            # ✅ FIX: Use "promocode" (no underscore) - matches model field
+
             booking = Booking.objects.create(
                 **validated_data,
                 promocode=promocode_obj,
@@ -216,6 +216,7 @@ class PromoCodeSerializer(serializers.ModelSerializer):
         fields = ["code","active","discount","valid_from",
         "valid_to",
         "applicable_events",
+         "id",
         ]
 
 

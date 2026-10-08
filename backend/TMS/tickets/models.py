@@ -85,8 +85,8 @@ class Ticket(models.Model):
 
 class PromoCode(models.Model):
     code = models.CharField(max_length=50,unique=True)
-    valid_from = models.DateTimeField()
-    valid_to = models.DateTimeField()
+    valid_from = models.DateField()
+    valid_to = models.DateField()
     discount = models.IntegerField(validators=[MinValueValidator(0)],help_text='Percentage value (0 to 100)')
     active = models.BooleanField()
     applicable_events = models.ManyToManyField(Event,blank=True)

@@ -31,6 +31,8 @@ import IndividualArtist from "./pages/IndividualArtist";
 import IndividualVenue from "./pages/IndividualVenue";
 import ArtistInquiries from "./pages/admin/ArtistInquiries";
 import VenueInquiries from "./pages/admin/VenueInquiries";
+import PromoCode from "./pages/admin/PromoCode";
+import PromoCodeForm from "./components/PromoCodeForm";
 
 const App = () => {
   return (
@@ -61,6 +63,15 @@ const App = () => {
           <Route element={<ProtectedRoute />}>
             <Route element={<AdminLayout />}>
               <Route path="/admin/dashboard" element={<Dashboard />} />
+              <Route path="/admin/promocode" element={<PromoCode />} />
+              <Route
+                path="/admin/promocode/new"
+                element={<PromoCodeForm />}
+              />
+               <Route
+                path="/admin/promocode/new/:slug"
+                element={<PromoCodeForm />}
+              />
               <Route path="/admin/events" element={<Events />} />
               <Route path="/admin/bookings" element={<Bookings />} />
               <Route

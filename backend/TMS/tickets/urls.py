@@ -10,12 +10,13 @@ from .views import (
     EventViewSet,
     InitiatEsewaPaymentView,
     InitiateKhaltiPaymentView,
+    PromoCodeAdminAPIView,
+    PromoCodeValidateAPIView,
     TicketViewSet,
     VenueBookingInquiryCreateView,
     VenueViewSet,
     VerifyEsewaPaymentView,
     VerifyKhaltiPaymentView,
-    PromoCodeAPIView,
 )
 from .admin_views import admin_dashboard_events, admin_dashboard_stats
 
@@ -82,7 +83,13 @@ urlpatterns = [
         'api/admin/events/',
         admin_dashboard_events, name='event_page',
     ),
-    path('promocode/', PromoCodeAPIView.as_view(), name='promo'),
+    path('promocode/', PromoCodeValidateAPIView.as_view(), name='promo'),
+    path('api/admin/promocode/', PromoCodeAdminAPIView.as_view(), name='promo'),
+    path(
+    "api/admin/promocode/<int:pk>/",
+    PromoCodeAdminAPIView.as_view(),
+    name="promo-detail",
+),
 
     
 ] + router.urls

@@ -7,6 +7,7 @@ import {
   Building2,
   Users,
   FolderKanban,
+  TicketPercent,
   ChevronRight,
   LogOut,
 } from "lucide-react";
@@ -25,6 +26,7 @@ const menuItems = [
   { name: "Venue", icon: Building2, path: "/admin/venue" },
   { name: "Artists", icon: Users, path: "/admin/artists" },
   { name: "Categories", icon: FolderKanban, path: "/admin/categories" },
+  { name: "Promo Code", icon: TicketPercent, path: "/admin/promocode" },
 ];
 
 const AdminSidebar = () => {
@@ -66,7 +68,10 @@ const AdminSidebar = () => {
 
         <nav className="flex flex-1 flex-row flex-wrap gap-2 lg:flex-col lg:space-y-2">
           {menuItems.map(({ name, icon: Icon, path }) => {
-            const isActive = location.pathname === path;
+            const isActive =
+              location.pathname === path ||
+              (path === "/admin/promocode" &&
+                location.pathname.startsWith(`${path}/`));
 
             return (
               <button

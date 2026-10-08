@@ -353,7 +353,8 @@ class ArtistViewSet(viewsets.ModelViewSet):
     permission_classes = [IsStaffOrReadOnly]
     lookup_field = 'slug'
 
-class PromoCodeAPIView(APIView):
+class PromoCodeValidateAPIView(APIView):
+    permission_classes = [AllowAny] 
     def post(self, request):
         code = request.data.get("code")
         if not code:
@@ -387,6 +388,45 @@ class PromoCodeAPIView(APIView):
             "message": f"{promo_code.discount}% discount applied!"
         }, status=200)
 
+class PromoCodeAdminAPIView(APIView):
+    permission_classes = [IsStaffOrReadOnly] 
+    def get_object(self, pk):
+        return get_object_or_404(PromoCode, pk=pk)
+    
+    def get(self, request, pk=None):
+        if pk is not None:
+            promo = self.get_object(pk)
+            return Response(PromoCodeSerializer(promo).data)
+
+        promo_codes = PromoCode.objects.all()
+        serializer = PromoCodeSerializer(promo_codes, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = PromoCodeSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+    def patch(self,request,pk):
+        promo = self.get_object(pk)
+        serializer = PromoCodeSerializer(promo, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self,request,pk):
+        promo = self.get_object(pk)
+        promo.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
+
 
 
 
@@ -408,7 +448,6 @@ class PromoCodeAPIView(APIView):
 
 
         
-
 
 
 
